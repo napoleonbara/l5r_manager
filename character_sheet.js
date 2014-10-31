@@ -295,7 +295,15 @@ $(function(){
     },
     skills: {
       where: '.table.sectionedit16 tr:gt(0)',
-      type: ['link', 'string', 'int']
+      type: function($sel){
+        var result = [];
+        $sel.each(function(){
+          var name = varnamize($(this).find('.col0 a').text());
+          var val = Number($(this).find('.col2').text());
+          result.push([name, val]);
+        });
+        return result;
+      }
     }
   };
   
@@ -365,6 +373,10 @@ $(function(){
     return obj3;
   }
 
+  function varnamize(str){
+    return str.toLowerCase().replace(/[ ']/, '_');
+  }
+
   function object_keep(obj, list){
     var r = {};
     for(var i = 0; i < list.length; i++){
@@ -402,21 +414,25 @@ $(function(){
     
     sheet.get = function(attr){
       if(typeof attr == 'string'){
-        switch(mapping[attr].type){
-          case 'int':
-            return Number(sheet[attr].text());
-            break;
-          case 'rank':
-            return sheet[attr].text().split('.').map(Number);
-                break; 
-            }
-          }else{
-            var result = {};
-            for(var attr_name in attr) if(attr.hasOwnProperty(attr_name)){
-              result[attr_name] = sheet.get(attr_name);
-            }
-            return result;
+        if(typeof mapping[attr].type == 'function'){
+          return mapping[attr].type(sheet[attr]);
+        }else{
+          switch(mapping[attr].type){
+            case 'int':
+              return Number(sheet[attr].text());
+              break;
+            case 'rank':
+              return sheet[attr].text().split('.').map(Number);
+                  break; 
+              }
           }
+        }else{
+          var result = {};
+          for(var attr_name in attr) if(attr.hasOwnProperty(attr_name)){
+            result[attr_name] = sheet.get(attr_name);
+          }
+          return result;
+        }
       };
     return sheet;
   }
@@ -434,6 +450,8 @@ $(function(){
   var sheet = map_character_sheet(sheet_mapping);
   console.log(sheet);
   var char = parse_character_sheet(sheet);
+  console.log(char);
+
   
   char.earth = Math.min(char.stamina, char.willpower);
   char.fire  = Math.min(char.agility, char.intelligence);
