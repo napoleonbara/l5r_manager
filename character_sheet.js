@@ -432,7 +432,7 @@ $(function(){
   }
 
   var sheet = map_character_sheet(sheet_mapping);
-  console.log('sheet');
+  console.log(sheet);
   var char = parse_character_sheet(sheet);
   
   char.earth = Math.min(char.stamina, char.willpower);
