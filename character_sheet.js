@@ -444,6 +444,8 @@ $(function(){
   char.wounds_out_max = char.earth * 5;
   
   sheet.set(object_keep(char, Object.keys(secondary_mapping)));
+  
+  console.log(char);
 //    earth: char.earth,
 //    water: char.water,
 //    fire: char.fire,
