@@ -293,6 +293,10 @@ $(function(){
       where: '.table.sectionedit14 .row8 .col2',
       type: 'int'
     },
+    skills: {
+      where: '.table.sectionedit16 tr:gt(0)',
+      type: ['link', 'string', 'int']
+    }
   };
   
   var secondary_mapping = {
@@ -418,7 +422,9 @@ $(function(){
   }
   
   function compute_insight(char){
+    var from_rings = (char.earth + char.water + char.air + char.fire + char.void) * 10;
     
+    return from_rings;
   }
   
   function parse_character_sheet(sheet){
@@ -426,13 +432,14 @@ $(function(){
   }
 
   var sheet = map_character_sheet(sheet_mapping);
+  console.log('sheet');
   var char = parse_character_sheet(sheet);
   
   char.earth = Math.min(char.stamina, char.willpower);
   char.fire  = Math.min(char.agility, char.intelligence);
   char.water = Math.min(char.strength, char.perception);
   char.air   = Math.min(char.reflexes, char.awareness);
-  char.insight = 150; //compute_insight(char);
+  char.insight = compute_insight(char);
   char.insight_rank = insight_rank(char.insight);
   char.wounds_healthy_max = char.earth * 2;
   char.wounds_nicked_max = char.earth * 2;
