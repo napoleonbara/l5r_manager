@@ -313,11 +313,11 @@ $(function(){
       type: 'int'
     },
     insight: {
-      where: '.table.sectionedit9 .row0 .col1',
+      where: '.table.sectionedit9 .row1 .col1',
       type: 'int'
     },
     insight_rank: {
-      where: '.table.sectionedit9 .row0 .col3',
+      where: '.table.sectionedit9 .row1 .col3',
       type: 'int'
     },
     wounds_healthy_max: {
