@@ -439,8 +439,18 @@ $(function(){
   
   function compute_insight(char){
     var from_rings = (char.earth + char.water + char.air + char.fire + char.void) * 10;
-    
-    return from_rings;
+    var from_skills = 0;
+    char.skills.forEach(function(a){
+      var name, val;
+      name = a[0]; val = a[1];
+      from_skills += val;
+      for(var insight_bonus_level in skills[name]){
+        if(val >= insight_bonus_level){
+          from_skills += skills[name][insight_bonus_level];
+        }
+      }
+    });
+    return from_rings + from_skills;
   }
   
   function parse_character_sheet(sheet){
