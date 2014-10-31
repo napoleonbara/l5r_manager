@@ -1,0 +1,28 @@
+#roll-spinner, #keep-spinner{
+  width: 1.5em;
+}
+#dices tr{
+  line-height: 100%
+}
+#dices td{
+  padding: 0.5em;
+  width: 2em;
+  border: 1px solid black;
+  text-align: center;
+}
+#dices td.empty{
+  border: none;
+}
+#dices td.keep{
+  background-color: lightgrey;
+  font-weight: bold;
+}
+#dices td.sum{
+  border: none;
+  font-weight: bold;
+  width: 5.5em;
+}
+#dices td.sum::before{
+  content: 'result: ';
+  font-weight: bold;
+}
