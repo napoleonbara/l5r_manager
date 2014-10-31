@@ -433,7 +433,7 @@ $(function(){
   char.water = Math.min(char.strength, char.perception);
   char.air   = Math.min(char.reflexes, char.awareness);
   char.insight = 150; //compute_insight(char);
-  char.insight_rank = insight_rank(insight);
+  char.insight_rank = insight_rank(char.insight);
   char.wounds_healthy_max = char.earth * 2;
   char.wounds_nicked_max = char.earth * 2;
   char.wounds_grazed_max = char.earth * 2;
