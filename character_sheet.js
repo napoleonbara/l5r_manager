@@ -205,7 +205,7 @@ $(function(){
   };
   
   function insight_rank(insight){
-    return Math.floor((insight - 150) / 25) + 2;
+    return Math.max(1, Math.floor((insight - 150) / 25) + 2);
   }
   
   var primary_mapping = {
