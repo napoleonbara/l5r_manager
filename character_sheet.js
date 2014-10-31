@@ -1,15 +1,11 @@
 $(function(){
-  var sheet_mapping = {
+  var primary_mapping = {
     stamina: {
       where: '.table.sectionedit10 .row0 .col1',
       type: 'int'
     },
     willpower: {
       where: '.table.sectionedit10 .row0 .col3',
-      type: 'int'
-    },
-    earth: {
-      where: '.table.sectionedit10 .row0 .col5',
       type: 'int'
     },
     strength: {
@@ -20,10 +16,6 @@ $(function(){
       where: '.table.sectionedit10 .row1 .col3',
       type: 'int'
     },
-    water: {
-      where: '.table.sectionedit10 .row1 .col5',
-      type: 'int'
-    },
     agility: {
       where: '.table.sectionedit10 .row2 .col1',
       type: 'int'
@@ -32,20 +24,12 @@ $(function(){
       where: '.table.sectionedit10 .row2 .col3',
       type: 'int'
     },
-    fire: {
-      where: '.table.sectionedit10 .row2 .col5',
-      type: 'int'
-    },
     reflexes: {
       where: '.table.sectionedit10 .row3 .col1',
       type: 'int'
     },
     awareness: {
       where: '.table.sectionedit10 .row3 .col3',
-      type: 'int'
-    },
-    air: {
-      where: '.table.sectionedit10 .row3 .col5',
       type: 'int'
     },
     void: {
@@ -69,6 +53,34 @@ $(function(){
       type: 'rank'
     },
   };
+  
+  var secondary_mapping = {
+    earth: {
+      where: '.table.sectionedit10 .row0 .col5',
+      type: 'int'
+    },
+    water: {
+      where: '.table.sectionedit10 .row1 .col5',
+      type: 'int'
+    },
+    fire: {
+      where: '.table.sectionedit10 .row2 .col5',
+      type: 'int'
+    },
+    air: {
+      where: '.table.sectionedit10 .row3 .col5',
+      type: 'int'
+    },
+  };
+  
+  function merge_objects(obj1,obj2){
+    var obj3 = {};
+    for (var attrname in obj1)if(obj1.hasOwnProperty(attrname)){ obj3[attrname] = obj1[attrname]; }
+    for (var attrname in obj2)if(obj1.hasOwnProperty(attrname)){ obj3[attrname] = obj2[attrname]; }
+    return obj3;
+  }
+  
+  var sheet_mapping = merge_objects(primary_mapping, secondary_mapping);
   
   function map_character_sheet(mapping){
     var sheet = {};
@@ -117,21 +129,7 @@ $(function(){
   }
       
   function parse_character_sheet(sheet){
-    return sheet.get({
-      stamina: null,
-      willpower: null,
-      strength: null,
-      perception: null,
-      agility: null,
-      intelligence: null,
-      reflexes: null,
-      awareness: null,
-      void: null,
-      status: null,  
-      glory: null,
-      honor: null,
-      taint: null,
-    });
+    return sheet.get(primary_mapping);
   }
 
   var sheet = map_character_sheet(sheet_mapping);
