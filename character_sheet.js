@@ -479,7 +479,8 @@ function get_all_effects(){
 }
 
 function format_effect(str){
-  str = str.replace('#', 'char.');
+  str = '"' + str.replace('#{','"+("').replace('}',')+"')+'"';
+  str = replace('$', 'char.');
   try{
     str = eval(str);
   }catch(err){
@@ -501,6 +502,8 @@ function regroup_effects(effects, where){
     }
   }
 }
+
+
 
 $(function(){
 
