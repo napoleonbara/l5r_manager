@@ -474,6 +474,12 @@ function get_all_effects(){
   return effects_record;
 }
 
+function format_effect(str){
+  str = str.replace('#', 'char.');
+  str = eval(str);
+  return str;
+}
+
 function regroup_effects(effects, where){
   var $where = $(where).find('ul');
 
@@ -481,6 +487,7 @@ function regroup_effects(effects, where){
     var domain_effects = effects[domain];
     for(var i = 0; i < domain_effects.length; i++){
       var effect_attr = domain_effects[i];
+      effect_str = format_effect(effect_attr.effect);
       $where.append('<li class="level1" title="'+effect_attr.because+
       '"><div class="li"><strong>'+domain+'</strong>: '+effect_attr.effect+'</div></li>');
     }
