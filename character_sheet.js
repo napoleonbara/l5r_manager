@@ -512,5 +512,5 @@ $(function(){
   sheet.set(object_keep(char, Object.keys(secondary_mapping)));
   
   var all_effects = get_all_effects();
-  regroup_effects(all_effects, '#experimental_fast_reference + div');
+  regroup_effects(all_effects, '#fast_reference + div');
 });
