@@ -299,7 +299,7 @@ var primary_mapping = {
       $sel.each(function(){
         var name = varnamize($(this).find('.col0 a').text());
         var val = Number($(this).find('.col2').text());
-        result.push({name, val]);
+        result.push([name, val]);
       });
       return result;
     }
