@@ -475,8 +475,7 @@ function get_all_effects(){
 }
 
 function regroup_effects(effects, where){
-  var $where = $(where);
-  $where = $('<ul></ul>').append_to($where);
+  var $where = $(where).find('ul');
 
   for(var domain in effects)if(effects.hasOwnProperty(domain)){
     var domain_effects = effects[domain];
