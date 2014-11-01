@@ -299,7 +299,7 @@ var primary_mapping = {
       $sel.each(function(){
         var name = varnamize($(this).find('.col0 a').text());
         var val = Number($(this).find('.col2').text());
-        result.push([name, val]);
+        result.push({name, val]);
       });
       return result;
     }
@@ -453,7 +453,11 @@ function compute_insight(char){
 }
 
 function parse_character_sheet(sheet){
-  return sheet.get(primary_mapping);
+  var r = sheet.get(primary_mapping);
+  r.skills.forEach(function(skill){
+    if(['iaijutsu'].indexOf(skill[0]) != -1){r[skill[0]] = skill[1];};
+  });
+  return r;
 }
 
 var sheet, char;
@@ -464,7 +468,7 @@ function get_all_effects(){
     var tag = this.tagName.toLowerCase();
     var because = $(this).attr('because');
     var effect = $(this).text();
-    
+
     if(!effects_record[tag]) effects_record[tag] = [];
     effects_record[tag].push({
       because: because,
@@ -476,9 +480,11 @@ function get_all_effects(){
 
 function format_effect(str){
   str = str.replace('#', 'char.');
-  console.log(str);
-  str = eval(str);
-  console.log(str);
+  try{
+    str = eval(str);
+  }catch(err){
+    str = err;
+  }
   return str;
 }
 
