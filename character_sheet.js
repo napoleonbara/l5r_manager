@@ -210,91 +210,91 @@ $(function(){
   
   var primary_mapping = {
     stamina: {
-      where: '.table.sectionedit10 .row0 .col1',
+      where: '#general table:nth(1) .row0 .col1',
       type: 'int'
     },
     willpower: {
-      where: '.table.sectionedit10 .row0 .col3',
+      where: '#general table:nth(1) .row0 .col3',
       type: 'int'
     },
     strength: {
-      where: '.table.sectionedit10 .row1 .col1',
+      where: '#general table:nth(1) .row1 .col1',
       type: 'int'
     },
     perception: {
-      where: '.table.sectionedit10 .row1 .col3',
+      where: '#general table:nth(1) .row1 .col3',
       type: 'int'
     },
     agility: {
-      where: '.table.sectionedit10 .row2 .col1',
+      where: '#general table:nth(1) .row2 .col1',
       type: 'int'
     },
     intelligence: {
-      where: '.table.sectionedit10 .row2 .col3',
+      where: '#general table:nth(1) .row2 .col3',
       type: 'int'
     },
     reflexes: {
-      where: '.table.sectionedit10 .row3 .col1',
+      where: '#general table:nth(1) .row3 .col1',
       type: 'int'
     },
     awareness: {
-      where: '.table.sectionedit10 .row3 .col3',
+      where: '#general table:nth(1) .row3 .col3',
       type: 'int'
     },
     void: {
-      where: '.table.sectionedit10 .row4 .col1',
+      where: '#general table:nth(1) .row4 .col1',
       type: 'int'
     },
     status: {
-      where: '.table.sectionedit11 .row0 .col1',
+      where: '#general table:nth(2) .row0 .col1',
       type: 'rank'
     }, 
     glory: {
-      where: '.table.sectionedit11 .row0 .col3',
+      where: '#general table:nth(2) .row0 .col3',
       type: 'rank'
     },
     honor: {
-      where: '.table.sectionedit11 .row0 .col5',
+      where: '#general table:nth(2) .row0 .col5',
       type: 'rank'
     },
     taint: {
-      where: '.table.sectionedit11 .row0 .col7',
+      where: '#general table:nth(2) .row0 .col7',
       type: 'rank'
     },
     wounds_healthy: {
-      where: '.table.sectionedit14 .row1 .col2',
+      where: '#wounds table:nth(0) .row1 .col2',
       type: 'int'
     },
     wounds_nicked: {
-      where: '.table.sectionedit14 .row2 .col2',
+      where: '#wounds table:nth(0) .row2 .col2',
       type: 'int'
     },
     wounds_grazed: {
-      where: '.table.sectionedit14 .row3 .col2',
+      where: '#wounds table:nth(0) .row3 .col2',
       type: 'int'
     },
     wounds_hurt: {
-      where: '.table.sectionedit14 .row4 .col2',
+      where: '#wounds table:nth(0) .row4 .col2',
       type: 'int'
     },
     wounds_injured: {
-      where: '.table.sectionedit14 .row5 .col2',
+      where: '#wounds table:nth(0) .row5 .col2',
       type: 'int'
     },
     wounds_crippled: {
-      where: '.table.sectionedit14 .row6 .col2',
+      where: '#wounds table:nth(0) .row6 .col2',
       type: 'int'
     },
     wounds_down: {
-      where: '.table.sectionedit14 .row7 .col2',
+      where: '#wounds table:nth(0) .row7 .col2',
       type: 'int'
     },
     wounds_out: {
-      where: '.table.sectionedit14 .row8 .col2',
+      where: '#wounds table:nth(0) .row8 .col2',
       type: 'int'
     },
     skills: {
-      where: '.table.sectionedit16 tr:gt(0)',
+      where: '#skills table:nth(0) tr:gt(0)',
       type: function($sel){
         var result = [];
         $sel.each(function(){
@@ -309,59 +309,59 @@ $(function(){
   
   var secondary_mapping = {
     earth: {
-      where: '.table.sectionedit10 .row0 .col5',
+      where: '#general table:nth(1) .row0 .col5',
       type: 'int'
     },
     water: {
-      where: '.table.sectionedit10 .row1 .col5',
+      where: '#general table:nth(1) .row1 .col5',
       type: 'int'
     },
     fire: {
-      where: '.table.sectionedit10 .row2 .col5',
+      where: '#general table:nth(1) .row2 .col5',
       type: 'int'
     },
     air: {
-      where: '.table.sectionedit10 .row3 .col5',
+      where: '#general table:nth(1) .row3 .col5',
       type: 'int'
     },
     insight: {
-      where: '.table.sectionedit9 .row1 .col1',
+      where: '#general table:nth(0) .row1 .col1',
       type: 'int'
     },
     insight_rank: {
-      where: '.table.sectionedit9 .row1 .col3',
+      where: '#general table:nth(0) .row1 .col3',
       type: 'int'
     },
     wounds_healthy_max: {
-      where: '.table.sectionedit14 .row1 .col1',
+      where: '#wounds table:nth(0) .row1 .col1',
       type: 'int'
     },
     wounds_nicked_max: {
-      where: '.table.sectionedit14 .row2 .col1',
+      where: '#wounds table:nth(0) .row2 .col1',
       type: 'int'
     },
     wounds_grazed_max: {
-      where: '.table.sectionedit14 .row3 .col1',
+      where: '#wounds table:nth(0) .row3 .col1',
       type: 'int'
     },
     wounds_hurt_max: {
-      where: '.table.sectionedit14 .row4 .col1',
+      where: '#wounds table:nth(0) .row4 .col1',
       type: 'int'
     },
     wounds_injured_max: {
-      where: '.table.sectionedit14 .row5 .col1',
+      where: '#wounds table:nth(0) .row5 .col1',
       type: 'int'
     },
     wounds_crippled_max: {
-      where: '.table.sectionedit14 .row6 .col1',
+      where: '#wounds table:nth(0) .row6 .col1',
       type: 'int'
     },
     wounds_down_max: {
-      where: '.table.sectionedit14 .row7 .col1',
+      where: '#wounds table:nth(0) .row7 .col1',
       type: 'int'
     },
     wounds_out_max: {
-      where: '.table.sectionedit14 .row8 .col1',
+      where: '#wounds table:nth(0) .row8 .col1',
       type: 'int'
     },
   };
