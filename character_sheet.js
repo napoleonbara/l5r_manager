@@ -476,7 +476,9 @@ function get_all_effects(){
 
 function format_effect(str){
   str = str.replace('#', 'char.');
+  console.log(str);
   str = eval(str);
+  console.log(str);
   return str;
 }
 
