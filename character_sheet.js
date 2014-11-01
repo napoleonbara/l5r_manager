@@ -491,7 +491,7 @@ function regroup_effects(effects, where){
       var effect_attr = domain_effects[i];
       effect_str = format_effect(effect_attr.effect);
       $where.append('<li class="level1" title="'+effect_attr.because+
-      '"><div class="li"><strong>'+domain+'</strong>: '+effect_attr.effect+'</div></li>');
+      '"><div class="li"><strong>'+domain+'</strong>: '+effect_str+'</div></li>');
     }
   }
 }
