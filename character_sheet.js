@@ -458,12 +458,40 @@ function parse_character_sheet(sheet){
 
 var sheet, char;
 
+function get_all_effects(){
+  var effects_record = {};
+  $('.effects > *').each(function(){
+    var tag = this.tagName.toLowerCase();
+    var because = $(this).attr('because');
+    var effect = $(this).text();
+    
+    if(!effects_record[tag]) effects_record[tag] = [];
+    effects_record[tag].push({
+      because: because,
+      effect: effect
+    });
+  });
+  return effects_record;
+}
+
+function regroup_effects(effects, where){
+  var $where = $(where);
+  $where = $where.append('<ul></ul>').find('ul');
+
+  for(var domain in all_effects)if(all_effects.hasOwnProperty(domain)){
+    var domain_effects = all_effects[domain];
+    for(var i = 0; i < domain_effects.length; i++){
+      var effect_attr = domain_effects[i];
+      $where.append('<li class="level1" title="'+effect_attr.because+
+      '"><div class="li"><strong>'+domain+'</strong>: '+effect_attr.effect+'</div></li>');
+    }
+  }
+}
+
 $(function(){
 
   sheet = map_character_sheet(sheet_mapping);
-  console.log(sheet);
   char = parse_character_sheet(sheet);
-  console.log(char);
 
   
   char.earth = Math.min(char.stamina, char.willpower);
@@ -483,5 +511,6 @@ $(function(){
   
   sheet.set(object_keep(char, Object.keys(secondary_mapping)));
   
-  console.log(char);
+  var all_effects = get_all_effects();
+  regroup_effects(all_effects, '#experimental_fast_reference + div');
 });
