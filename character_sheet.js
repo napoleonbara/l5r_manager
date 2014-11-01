@@ -478,8 +478,8 @@ function regroup_effects(effects, where){
   var $where = $(where);
   $where = $where.append('<ul></ul>').find('ul');
 
-  for(var domain in all_effects)if(all_effects.hasOwnProperty(domain)){
-    var domain_effects = all_effects[domain];
+  for(var domain in effects)if(effects.hasOwnProperty(domain)){
+    var domain_effects = effects[domain];
     for(var i = 0; i < domain_effects.length; i++){
       var effect_attr = domain_effects[i];
       $where.append('<li class="level1" title="'+effect_attr.because+
