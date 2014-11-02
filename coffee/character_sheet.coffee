@@ -66,8 +66,8 @@ class CharacterSheet
   
   format_effect: (str) ->
     str = str.replace(/^\s+|\s+$/g, '')
-    str = '"' + str.replace('#{','"+(').replace('}',')+"')+'"'
-    str = str.replace('@', '_map_.')
+    str = '"' + str.replace(/#\{/g,'"+(').replace(/\}/g',')+"')+'"'
+    str = str.replace(/@/g, '_map_.')
     _map_ = @map(@mapping, true)
     try
       str = eval(str)
