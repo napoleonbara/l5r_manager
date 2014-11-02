@@ -13,6 +13,15 @@ COFFEE_SOURCE_TO_JS_TARGET = ->(t){change_folder_and_extention('javascripts', t,
 JS_TARGET_TO_COFFEE_SOURCE = ->(t){change_folder_and_extention('coffee', t, '.js', '.coffee')}
 JS_TARGETS = COFFEE_SOURCES.map(&COFFEE_SOURCE_TO_JS_TARGET)
 
+
+file 'javascripts\\character_sheet.js' => [
+  'coffee/skills_data.coffee',
+  'coffee/helpers.coffee',
+  'coffee/character.coffee',
+  'coffee/character_sheet.coffee'] do |t|
+  sh "coffee --map --compile --output javascripts\\ --join character_sheet.js #{t.sources.join(' ')}"
+end
+
 rule '.css' => CSS_TARGET_TO_SASS_SOURCE do |t|
   sh "sass #{t.source} #{t.name}"
 end
@@ -21,9 +30,10 @@ rule '.js' => JS_TARGET_TO_COFFEE_SOURCE do |t|
   sh "coffee --map --compile --output javascripts\\ #{t.source}"
 end
 
+
 task :css_build => CSS_TARGETS
 
-task :js_build => JS_TARGETS
+task :js_build => ['javascripts\\character_sheet.js', 'javascripts\\dices.js']
 
 task :build => [:css_build, :js_build]
 
