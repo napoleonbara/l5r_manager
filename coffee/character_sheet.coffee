@@ -39,8 +39,10 @@ class CharacterSheet
     for category, effects of effect_dict
       for effect_attr in effects
         effect_str = @format_effect(effect_attr.effect)
+        content = ["<strong>#{category}</strong>:", effect_str]
+        content.push "<em>(#{effect_attr.why})<em>" if effect_attr.why?
         $where.append("<li class='level1' ><div class='li'>"+
-          "<strong>#{category}</strong>: #{effect_str} <em>(#{effect_attr.why})<em>"+
+          content.join(' ')+
           "</div></li>")
 
   get_all_effects: ->

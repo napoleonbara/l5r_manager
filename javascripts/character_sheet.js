@@ -527,7 +527,7 @@
     };
 
     CharacterSheet.prototype.regroup_effects = function(where) {
-      var $where, category, effect_attr, effect_dict, effect_str, effects, _results;
+      var $where, category, content, effect_attr, effect_dict, effect_str, effects, _results;
       $where = $(where).find('ul');
       effect_dict = this.get_all_effects();
       _results = [];
@@ -539,7 +539,11 @@
           for (_i = 0, _len = effects.length; _i < _len; _i++) {
             effect_attr = effects[_i];
             effect_str = this.format_effect(effect_attr.effect);
-            _results1.push($where.append("<li class='level1' ><div class='li'>" + ("<strong>" + category + "</strong>: " + effect_str + " <em>(" + effect_attr.why + ")<em>") + "</div></li>"));
+            content = ["<strong>" + category + "</strong>:", effect_str];
+            if (effect_attr.why != null) {
+              content.push("<em>(" + effect_attr.why + ")<em>");
+            }
+            _results1.push($where.append("<li class='level1' ><div class='li'>" + content.join(' ') + "</div></li>"));
           }
           return _results1;
         }).call(this));
