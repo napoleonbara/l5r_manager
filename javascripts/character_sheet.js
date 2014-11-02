@@ -539,7 +539,7 @@
           for (_i = 0, _len = effects.length; _i < _len; _i++) {
             effect_attr = effects[_i];
             effect_str = this.format_effect(effect_attr.effect);
-            _results1.push($where.append(("<li class='level1' title='" + effect_attr.why + "'>") + ("<div class='li'><strong>" + category + "</strong>: " + effect_str + "</div></li>")));
+            _results1.push($where.append("<li class='level1' ><div class='li'>" + ("<strong>" + category + "</strong>: " + effect_str + " <em>(" + effect_attr.why + ")<em>") + "</div></li>"));
           }
           return _results1;
         }).call(this));
