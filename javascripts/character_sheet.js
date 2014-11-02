@@ -588,8 +588,8 @@
     CharacterSheet.prototype.format_effect = function(str) {
       var err, _map_;
       str = str.replace(/^\s+|\s+$/g, '');
-      str = '"' + str.replace('#{', '"+(').replace('}', ')+"') + '"';
-      str = str.replace('@', '_map_.');
+      str = '"' + str.replace(/#\{/g, '"+(').replace(/\}/g, ')+"') + '"';
+      str = str.replace(/@/g, '_map_.');
       _map_ = this.map(this.mapping, true);
       try {
         str = eval(str);
