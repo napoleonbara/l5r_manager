@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAAA,QAAQ;EACN,OAAO,EAAE,IAAI",
+"sources": ["../sass/character_sheet.sass"],
+"names": [],
+"file": "character_sheet.css"
+}
