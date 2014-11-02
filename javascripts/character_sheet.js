@@ -223,7 +223,10 @@
   };
 
   varnamize = function(str) {
-    return str.replace(/^\s+|\s+$/g, '').toLowerCase().replace(/[ ']/, '_');
+    str = str.replace(/^\s+|\s+$/g, '');
+    str = str.toLowerCase();
+    str = str.replace(/[\s':]/g, '_');
+    return str = str.replace(/_+/g, '_');
   };
 
   object_keep = function(obj, list) {
@@ -338,7 +341,8 @@
           elem = _ref[_i];
           _results.push({
             category: varnamize($(elem).find('.col0 a').text()),
-            name: $(elem).find('.col0').text(),
+            var_name: varnamize($(elem).find('.col0').text()),
+            pretty_name: $(elem).find('.col0').text(),
             emphases: $(elem).find('.col1').text(),
             rank: Number($(elem).find('.col2').text())
           });
@@ -468,9 +472,11 @@
   SHEET_MAPPING = merge_objects(PRIMARY_MAPPING, SECONDARY_MAPPING);
 
   CharacterSheet = (function() {
-    function CharacterSheet(mapping) {
+    function CharacterSheet(primaries, secondaries) {
       var attr_name, properties, _ref;
-      this.mapping = mapping;
+      this.primaries = primaries;
+      this.secondaries = secondaries;
+      this.mapping = merge_objects(this.primaries, this.secondaries);
       _ref = this.mapping;
       for (attr_name in _ref) {
         properties = _ref[attr_name];
@@ -521,19 +527,19 @@
     };
 
     CharacterSheet.prototype.regroup_effects = function(where) {
-      var $where, domain, domain_effects, effect_attr, effect_str, effects, _results;
+      var $where, category, effect_attr, effect_dict, effect_str, effects, _results;
       $where = $(where).find('ul');
-      effects = this.get_all_effects();
+      effect_dict = this.get_all_effects();
       _results = [];
-      for (domain in effects) {
-        domain_effects = effects[domain];
+      for (category in effect_dict) {
+        effects = effect_dict[category];
         _results.push((function() {
           var _i, _len, _results1;
           _results1 = [];
-          for (_i = 0, _len = domain_effects.length; _i < _len; _i++) {
-            effect_attr = domain_effects[_i];
+          for (_i = 0, _len = effects.length; _i < _len; _i++) {
+            effect_attr = effects[_i];
             effect_str = this.format_effect(effect_attr.effect);
-            _results1.push($where.append(("<li class='level1' title='" + effect_attr.because + "'>") + ("<div class='li'><strong>" + domain + "</strong>: " + effect_str + "</div></li>")));
+            _results1.push($where.append(("<li class='level1' title='" + effect_attr.why + "'>") + ("<div class='li'><strong>" + category + "</strong>: " + effect_str + "</div></li>")));
           }
           return _results1;
         }).call(this));
@@ -544,27 +550,47 @@
     CharacterSheet.prototype.get_all_effects = function() {
       var effects_record;
       effects_record = {};
-      $('.effects > *').each(function() {
-        var because, effect, tag;
-        tag = this.tagName.toLowerCase();
-        because = $(this).attr('because');
-        effect = $(this).text();
-        if (!effects_record[tag]) {
-          effects_record[tag] = [];
+      $('effect').each(function() {
+        var category, effect, why;
+        category = $(this).attr('cat');
+        why = $(this).attr('why');
+        effect = $(this).attr('effect');
+        if (!effects_record[category]) {
+          effects_record[category] = [];
         }
-        return effects_record[tag].push({
-          because: because,
+        return effects_record[category].push({
+          why: why,
           effect: effect
         });
       });
       return effects_record;
     };
 
+    CharacterSheet.prototype.map = function(dict, with_skills) {
+      var n, r, s, _i, _len, _ref;
+      if (with_skills == null) {
+        with_skills = false;
+      }
+      r = {};
+      for (n in dict) {
+        r[n] = this.get(n);
+      }
+      if (with_skills) {
+        _ref = this.get('skills');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          s = _ref[_i];
+          r[s.var_name] = s.rank;
+        }
+      }
+      return r;
+    };
+
     CharacterSheet.prototype.format_effect = function(str) {
-      var err;
+      var err, _map_;
       str = str.replace(/^\s+|\s+$/g, '');
       str = '"' + str.replace('#{', '"+(').replace('}', ')+"') + '"';
-      str = str.replace('$', 'char.');
+      str = str.replace('@', '_map_.');
+      _map_ = this.map(this.mapping, true);
       try {
         str = eval(str);
       } catch (_error) {
@@ -574,15 +600,13 @@
       return str;
     };
 
-    CharacterSheet.prototype.complete = function(secondaries) {
-      var map, n, name, properties, _results;
-      map = {};
-      for (n in PRIMARY_MAPPING) {
-        map[n] = this.get(n);
-      }
+    CharacterSheet.prototype.complete = function() {
+      var map, name, properties, _ref, _results;
+      map = this.map(this.primaries);
+      _ref = this.secondaries;
       _results = [];
-      for (name in secondaries) {
-        properties = secondaries[name];
+      for (name in _ref) {
+        properties = _ref[name];
         map[name] = properties.compute.call(map);
         _results.push(this.set(name, map[name]));
       }
@@ -595,8 +619,8 @@
 
   $(function() {
     var sheet;
-    sheet = new CharacterSheet(SHEET_MAPPING);
-    sheet.complete(SECONDARY_MAPPING);
+    sheet = new CharacterSheet(PRIMARY_MAPPING, SECONDARY_MAPPING);
+    sheet.complete();
     return sheet.regroup_effects('#fast_reference + div');
   });
 

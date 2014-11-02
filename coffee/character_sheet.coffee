@@ -1,6 +1,7 @@
 
 class CharacterSheet
-  constructor: (@mapping) ->
+  constructor: (@primaries, @secondaries) ->
+    @mapping = merge_objects(@primaries, @secondaries)
     for attr_name, properties of @mapping
       @[attr_name] = $(properties.where)
 
@@ -33,32 +34,40 @@ class CharacterSheet
 
   regroup_effects: (where) ->
     $where = $(where).find('ul')
-    effects = @get_all_effects()
+    effect_dict = @get_all_effects()
 
-    for domain, domain_effects of effects
-      for effect_attr in domain_effects
+    for category, effects of effect_dict
+      for effect_attr in effects
         effect_str = @format_effect(effect_attr.effect)
-        $where.append("<li class='level1' title='#{effect_attr.because}'>" + 
-          "<div class='li'><strong>#{domain}</strong>: #{effect_str}</div></li>")
+        $where.append("<li class='level1' title='#{effect_attr.why}'>" + 
+          "<div class='li'><strong>#{category}</strong>: #{effect_str}</div></li>")
 
   get_all_effects: ->
     effects_record = {}
-    $('.effects > *').each( () ->
-      tag = this.tagName.toLowerCase()
-      because = $(this).attr('because')
-      effect = $(this).text()
-  
-      unless effects_record[tag] then effects_record[tag] = []
-      effects_record[tag].push
-        because: because
+    $('effect').each () ->
+      category = $(this).attr('cat')
+      why = $(this).attr('why')
+      effect = $(this).attr('effect')
+
+      unless effects_record[category] then effects_record[category] = []
+      effects_record[category].push
+        why: why
         effect: effect
-    )
+
     effects_record
+  
+  map: (dict, with_skills = false) ->
+    r = {}
+    r[n] = @get(n) for n of dict
+    if with_skills
+      r[s.var_name] = s.rank for s in @get('skills')
+    r
   
   format_effect: (str) ->
     str = str.replace(/^\s+|\s+$/g, '')
     str = '"' + str.replace('#{','"+(').replace('}',')+"')+'"'
-    str = str.replace('$', 'char.')
+    str = str.replace('@', '_map_.')
+    _map_ = @map(@mapping, true)
     try
       str = eval(str)
     catch err
@@ -66,17 +75,16 @@ class CharacterSheet
   
     return str
     
-  complete: (secondaries) ->
-    map = {}
-    map[n] = @get(n) for n of PRIMARY_MAPPING
-    for name, properties of secondaries
+  complete: ->
+    map = @map(@primaries)
+    for name, properties of @secondaries
       map[name] = properties.compute.call(map)
       @set(name, map[name])
   
 $ ->
 
-  sheet = new CharacterSheet(SHEET_MAPPING)
+  sheet = new CharacterSheet(PRIMARY_MAPPING, SECONDARY_MAPPING)
 
-  sheet.complete(SECONDARY_MAPPING)
+  sheet.complete()
 
   sheet.regroup_effects('#fast_reference + div')

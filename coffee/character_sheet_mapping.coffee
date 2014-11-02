@@ -67,10 +67,11 @@ PRIMARY_MAPPING =
     where: '#skills + div .table:nth-of-type(1) tr:gt(0)'
     type: ($sel) ->
       for elem in $sel.toArray()
-        category: varnamize($(elem).find('.col0 a').text())
-        name    : $(elem).find('.col0').text()
-        emphases: $(elem).find('.col1').text()
-        rank    : Number($(elem).find('.col2').text())
+        category   : varnamize($(elem).find('.col0 a').text())
+        var_name   : varnamize($(elem).find('.col0').text())
+        pretty_name: $(elem).find('.col0').text()
+        emphases   : $(elem).find('.col1').text()
+        rank       : Number($(elem).find('.col2').text())
 
 SECONDARY_MAPPING =
   earth:
