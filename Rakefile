@@ -17,7 +17,7 @@ JS_TARGETS = COFFEE_SOURCES.map(&COFFEE_SOURCE_TO_JS_TARGET)
 file 'javascripts\\character_sheet.js' => [
   'coffee/skills_data.coffee',
   'coffee/helpers.coffee',
-  'coffee/character.coffee',
+  'coffee/character_sheet_mapping.coffee',
   'coffee/character_sheet.coffee'] do |t|
   sh "coffee --map --compile --output javascripts\\ --join character_sheet.js #{t.sources.join(' ')}"
 end

@@ -14,3 +14,7 @@ object_keep = (obj, list) ->
     r[list[i]] = obj[list[i]]
   r
 
+min = Math.min
+max = Math.max
+floor = Math.floor
+ceil = Math.ceil

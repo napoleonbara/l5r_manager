@@ -1,22 +1,10 @@
 class Character
   constructor: (attributes) ->
-    for attribute, value of attributes
-      @[attribute] = value
+    for attribute_name of PRIMARY_MAPPING
+      @[attribute_name] = attributes[attribute_name]
 
-    @earth               = @earth()
-    @fire                = @fire()
-    @water               = @water()
-    @air                 = @air()
-    @insight             = @insight()
-    @insight_rank        = @insight_rank()
-    @wounds_healthy_max  = @wounds_healthy_max()
-    @wounds_nicked_max   = @wounds_nicked_max()
-    @wounds_grazed_max   = @wounds_grazed_max()
-    @wounds_hurt_max     = @wounds_hurt_max()
-    @wounds_injured_max  = @wounds_injured_max()
-    @wounds_crippled_max = @wounds_crippled_max()
-    @wounds_down_max     = @wounds_down_max()
-    @wounds_out_max      = @wounds_out_max()
+    for attribute_name of SECONDARY_MAPPING
+      @[attribute_name] = @[attribute_name]()
 
   earth: ->
     Math.min(@stamina, @willpower)
@@ -35,11 +23,10 @@ class Character
     from_skills = 0
     from_mastery = 0
     for skill in @skills
-      [name, val] = skill
-      from_skills += val
-      for insight_bonus_level in SKILLS[name]
-        if val >= insight_bonus_level
-          from_mastery += SKILLS[name][insight_bonus_level]
+      from_skills += skill.rank
+      for insight_bonus_level in SKILLS[skill.category]
+        if skill.rank >= insight_bonus_level
+          from_mastery += SKILLS[skill.category][insight_bonus_level]
 
     from_rings + from_skills + from_mastery
 
