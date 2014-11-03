@@ -491,7 +491,7 @@
           case 'int':
             return this[attr].text(val);
           case 'rank':
-            return this[attr].text(val.join('.'));
+            return this[attr].text("" + val.rank + "." + val.points);
         }
       } else {
         _results = [];
@@ -504,7 +504,7 @@
     };
 
     CharacterSheet.prototype.get = function(attr) {
-      var attr_name, result, value;
+      var attr_name, points, rank, result, value, _ref;
       if (typeof attr === 'string') {
         if (typeof this.mapping[attr].type === 'function') {
           return this.mapping[attr].type(this[attr]);
@@ -513,10 +513,13 @@
             case 'int':
               return Number(this[attr].text());
             case 'rank':
-              return this[attr].text().split('.').map(Number);
+              _ref = this[attr].text().split('.').map(Number), rank = _ref[0], points = _ref[1];
+              return {
+                rank: rank,
+                points: points
+              };
           }
         }
-      } else {
         result = {};
         for (attr_name in attr) {
           value = attr[attr_name];

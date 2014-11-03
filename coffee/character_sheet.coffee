@@ -11,7 +11,7 @@ class CharacterSheet
         when 'int'
           @[attr].text(val)
         when 'rank'
-          @[attr].text(val.join('.'))
+          @[attr].text("#{val.rank}.#{val.points}")
     else
       for attr_name, value of attr
         @set(attr_name, value)
@@ -25,8 +25,9 @@ class CharacterSheet
           when 'int'
             return Number(@[attr].text())
           when 'rank'
-            return @[attr].text().split('.').map(Number)
-    else
+            [rank, points] = @[attr].text().split('.').map(Number)
+            return rank: rank, points: points 
+          else
       result = {}
       for attr_name, value of attr
           result[attr_name] = @get(attr_name)
