@@ -5,10 +5,13 @@ merge_objects = (objs...) ->
   r
 
 varnamize = (str) ->
-  str = str.replace(/^\s+|\s+$/g, '')
+  str = trim(str)
   str = str.toLowerCase()
   str = str.replace(/[\s':]/g, '_')
   str = str.replace(/_+/g, '_')
+
+trim = (str) ->
+  str.replace(/^\s+|\s+$/g, '')
 
 object_keep = (obj, list) ->
   r = {}

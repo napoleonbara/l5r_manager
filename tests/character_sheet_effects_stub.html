@@ -84,11 +84,9 @@
 
       <p>
 
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css">
-        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="../css/character_sheet.css">
         <script src="../javascripts/character_sheet.js"></script>
-        <link rel="stylesheet" href="../css/character_sheet.css" />
+
       </p>
 
       <h1 class="sectionedit1" id="hida_makoto_le_crabe_confiant">Hida Makoto, le Crabe confiant</h1>
@@ -99,10 +97,10 @@
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Hida Makoto, le Crabe confiant] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="562-607">
+            <input type="hidden" name="range" value="578-623">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Hida Makoto, le Crabe confiant">
           </div>
@@ -110,48 +108,37 @@
       </div>
       <h2 class="sectionedit2" id="fast_reference">Fast Reference</h2>
       <div class="level2">
+
+        <p>
+
+        </p>
         <ul>
-          <li class="level1">
-            <div class="li">
-              <strong>attaque(kenjutsu)</strong>: 4k2 + 3
-            </div>
-          </li>
-          <li class="level1">
-            <div class="li">
-              <strong>dommages(lame kaiu)</strong>: 7k3 + 3
-            </div>
-          </li>
-          <li class="level1">
-            <div class="li">
-              <strong>attaque(testubo)</strong>: 3k2 + 3, -10 TN by armor
-            </div>
-          </li>
-          <li class="level1">
-            <div class="li">
-              <strong>dommages(testubo)</strong>: 5g3 + 3
-            </div>
-          </li>
-          <li class="level1">
-            <div class="li">
-              <strong>init</strong>: 4k3 <em>(Relexes+Insight rank)g(Reflexes) + bonus</em>
-            </div>
-          </li>
-          <li class="level1">
-            <div class="li">
-              <strong>TN pour toucher</strong>: 15 de base <em>(5*Reflexes) + bonus</em>, armure +7 <em>poor condition</em>
-            </div>
-          </li>
         </ul>
 
+        <effect cat="attaque(kenjutsu)" why="Hida bushi rang 1" effect="#{@agility+@kenjutsu}k#{@agility} + #{@earth}">
+          <effect cat="dommages(kaiu blade)" why="Hida bushi rang 1, avantage: grand" effect="#{@strength + 1 + 3}k3 + #{@earth}">
+            <effect cat="attaque(tetsubo)" why="Hida bushi rang 1, avantage: grand, arme: testubo" effect="#{@agility+@heavy_weapons}k#{@agility} + #{@earth}, -10 TN by armor">
+              <effect cat="dommages(tetsubo)" why="Hida bushi rang 1, avantage: grand, arme: testubo" effect="#{floor(@strength * 1.5) + 1}k3 + #{@earth}">
+                <effect cat="initiative" effect="#{@reflexes+@insight_rank}k#{@reflexes}">
+                  <effect cat="TN pour toucher" effect="#{@reflexes * 5} de base">
+
+                    <p></p>
+
+                  </effect>
+                </effect>
+              </effect>
+            </effect>
+          </effect>
+        </effect>
       </div>
       <div class="secedit editbutton_section editbutton_2">
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Fast Reference] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="608-947">
+            <input type="hidden" name="range" value="624-1369">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Fast Reference">
           </div>
@@ -166,24 +153,25 @@
                 <th class="col0 leftalign"><strong>Clan</strong></th><td class="col1"> Crabe </td><th class="col2"><strong>Ecole</strong></th><td class="col3"><a href="/Dk/doku.php?id=l5r:reference:hida_bushi" class="wikilink1" title="l5r:reference:hida_bushi">Hida Bushi</a></td>
               </tr>
               <tr class="row1">
-                <th class="col0"><strong>Insight</strong></th><td class="col1 centeralign">?</td><th class="col2"><strong>rank</strong></th><td class="col3 centeralign">?</td>
+                <th class="col0"><strong>Insight</strong></th><td class="col1 centeralign">140</td><th class="col2"><strong>rank</strong></th><td class="col3 centeralign">1</td>
               </tr>
             </tbody>
           </table>
+        </div>
         <div class="table sectionedit5">
           <table class="inline">
             <tbody>
               <tr class="row0">
-                <th class="col0"><strong>Stamina</strong></th><td class="col1"> 3 </td><th class="col2 leftalign"><strong>Willpower</strong></th><td class="col3"> 3 </td><th class="col4"><strong>Earth</strong></th><td class="col5">?</td>
+                <th class="col0"><strong>Stamina</strong></th><td class="col1"> 3 </td><th class="col2 leftalign"><strong>Willpower</strong></th><td class="col3"> 3 </td><th class="col4"><strong>Earth</strong></th><td class="col5">3</td>
               </tr>
               <tr class="row1">
-                <th class="col0"><strong>Strength</strong></th><td class="col1"> 3 </td><th class="col2 leftalign"><strong>Perception</strong></th><td class="col3"> 2 </td><th class="col4"><strong>Water</strong></th><td class="col5">?</td>
+                <th class="col0"><strong>Strength</strong></th><td class="col1"> 3 </td><th class="col2 leftalign"><strong>Perception</strong></th><td class="col3"> 2 </td><th class="col4"><strong>Water</strong></th><td class="col5">2</td>
               </tr>
               <tr class="row2">
-                <th class="col0"><strong>Agility</strong></th><td class="col1"> 2 </td><th class="col2"><strong>Intelligence</strong></th><td class="col3"> 2 </td><th class="col4"><strong>Fire</strong></th><td class="col5">?</td>
+                <th class="col0"><strong>Agility</strong></th><td class="col1"> 2 </td><th class="col2"><strong>Intelligence</strong></th><td class="col3"> 2 </td><th class="col4"><strong>Fire</strong></th><td class="col5">2</td>
               </tr>
               <tr class="row3">
-                <th class="col0"><strong>Reflexes</strong></th><td class="col1"> 3 </td><th class="col2 leftalign"><strong>Awareness</strong></th><td class="col3"> 3 </td><th class="col4 leftalign"><strong>Air</strong></th><td class="col5">?</td>
+                <th class="col0"><strong>Reflexes</strong></th><td class="col1"> 3 </td><th class="col2 leftalign"><strong>Awareness</strong></th><td class="col3"> 3 </td><th class="col4 leftalign"><strong>Air</strong></th><td class="col5">3</td>
               </tr>
               <tr class="row4">
                 <th class="col0 leftalign"><strong>Void</strong></th><td class="col1"> 2 </td><th class="col2 leftalign"> Void spent </th><td class="col3"> 0 </td><td class="col4 leftalign" colspan="2"></td>
@@ -215,10 +203,10 @@
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[General] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="948-1446">
+            <input type="hidden" name="range" value="1370-1868">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="General">
           </div>
@@ -233,28 +221,28 @@
                 <td class="col0 leftalign"><strong>wounds</strong></td><th class="col1"> total </th><th class="col2"> current </th>
               </tr>
               <tr class="row1">
-                <th class="col0 leftalign"> Healthy </th><td class="col1 centeralign">?</td><td class="col2 centeralign"> 0 </td>
+                <th class="col0 leftalign"> Healthy </th><td class="col1 centeralign">6</td><td class="col2 centeralign"> 0 </td>
               </tr>
               <tr class="row2">
-                <th class="col0 leftalign"> Nicked(TN+3) </th><td class="col1 centeralign">?</td><td class="col2 centeralign"> 0 </td>
+                <th class="col0 leftalign"> Nicked(TN+3) </th><td class="col1 centeralign">6</td><td class="col2 centeralign"> 0 </td>
               </tr>
               <tr class="row3">
-                <th class="col0 leftalign"> Grazed(TN+5) </th><td class="col1 centeralign">?</td><td class="col2 centeralign"> 0 </td>
+                <th class="col0 leftalign"> Grazed(TN+5) </th><td class="col1 centeralign">6</td><td class="col2 centeralign"> 0 </td>
               </tr>
               <tr class="row4">
-                <th class="col0 leftalign"> Hurt(TN+10) </th><td class="col1 centeralign">?</td><td class="col2 centeralign"> 0 </td>
+                <th class="col0 leftalign"> Hurt(TN+10) </th><td class="col1 centeralign">6</td><td class="col2 centeralign"> 0 </td>
               </tr>
               <tr class="row5">
-                <th class="col0"> Injured(TN+15) </th><td class="col1 centeralign">?</td><td class="col2 centeralign"> 0 </td>
+                <th class="col0"> Injured(TN+15) </th><td class="col1 centeralign">6</td><td class="col2 centeralign"> 0 </td>
               </tr>
               <tr class="row6">
-                <th class="col0"> Crippled(TN+20)</th><td class="col1 centeralign">?</td><td class="col2 centeralign"> 0 </td>
+                <th class="col0"> Crippled(TN+20)</th><td class="col1 centeralign">6</td><td class="col2 centeralign"> 0 </td>
               </tr>
               <tr class="row7">
-                <th class="col0 leftalign"> Down(TN+40) </th><td class="col1 centeralign">?</td><td class="col2 centeralign"> 0 </td>
+                <th class="col0 leftalign"> Down(TN+40) </th><td class="col1 centeralign">6</td><td class="col2 centeralign"> 0 </td>
               </tr>
               <tr class="row8">
-                <th class="col0 leftalign"> Out </th><td class="col1 centeralign">?</td><td class="col2 centeralign"> 0 </td>
+                <th class="col0 leftalign"> Out </th><td class="col1 centeralign">15</td><td class="col2 centeralign"> 0 </td>
               </tr>
             </tbody>
           </table>
@@ -265,10 +253,10 @@
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Wounds] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="1447-1800">
+            <input type="hidden" name="range" value="1869-2222">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Wounds">
           </div>
@@ -327,6 +315,9 @@
               <tr class="row15">
                 <th class="col0"><a href="/Dk/doku.php?id=l5r:reference:skills#traps" class="wikilink1" title="l5r:reference:skills">Traps</a></th><td class="col1 leftalign"></td><td class="col2 centeralign"> 1 </td>
               </tr>
+              <tr class="row16">
+                <th class="col0"><em><a href="/Dk/doku.php?id=l5r:reference:skills#lore" class="wikilink1" title="l5r:reference:skills">Lore</a>: zero</em></th><td class="col1 leftalign"></td><td class="col2 centeralign"> 0 </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -340,10 +331,10 @@
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Skills] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="1801-3110">
+            <input type="hidden" name="range" value="2223-3532">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Skills">
           </div>
@@ -361,21 +352,27 @@
 
         <p>
 
-        </p>
-        <effect cat="skirmish" why="hida bushi rang 1" effect="ajoute #{@earth} en degats et attaque en melee"></effect>
-        <effect cat="skirmish" why="hida bushi rang 1" effect="pas de penalites d'armure a part stealth"></effect>
+          <effect cat="skirmish" why="hida bushi rang 1" effect="ajoute #{@earth} en degats et attaque en melee"></effect>
+          <effect cat="skirmish" why="hida bushi rang 1" effect="pas de penalites d'armure a part pour stealth"></effect>
+ 
+          <!-- Testing the display/retrieval of skills stats-->
+          <effect cat="test" why="test skill stats" effect="My Lore:Shadowlands is #{@lore_shadowlands}"></effect>
+          <!-- Testing the display/retrieval of rank.points stats-->
+          <effect cat="test" why="test rank stats" effect="My Honor rank is #{@honor.rank}, my honor points #{@honor.points}"></effect>
+          <!-- How can we change the way to compute a stat, like wound levels ?-->
+          <rule stat="wounds_[^_]+_max" op="add" with="#{@honor.rank}"></rule>
 
-        <p></p>
+        </p>
 
       </div>
       <div class="secedit editbutton_section editbutton_12">
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Techniques] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="3111-3448">
+            <input type="hidden" name="range" value="3533-3853">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Techniques">
           </div>
@@ -413,23 +410,18 @@
 
         <p>
 
+          <effect cat="skirmish" why="arme: testubo" effect="Avec un tetsubo, reduit l'armure de 10 et utilise #{floor(@strength * 1.5)} en force pour les degats"></effect>
         </p>
-        <effect cat="skirmish" why="arme: testubo" effect="Avec un tetsubo, reduit l'armure de 10 et utilise #{floor(@strength * 1.5)} en force pour les degats"></effect>
-
-        <effect cat="skirmish" why="test skills" effect="my defense skill is #{@defense}"></effect>
-        <effect cat="skirmish" why="test skills" effect="my Lore: Shadowlands skill is #{@lore_shadowlands}"></effect>
-
-        <p></p>
 
       </div>
       <div class="secedit editbutton_section editbutton_13">
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Weapons] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="3449-4243">
+            <input type="hidden" name="range" value="3854-4616">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Weapons">
           </div>
@@ -455,10 +447,10 @@
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Armor] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="4244-4416">
+            <input type="hidden" name="range" value="4617-4789">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Armor">
           </div>
@@ -486,20 +478,18 @@
 
         <p>
 
+          <effect cat="skirmish" why="avantage: grand" effect="+1k0 degats en melee"></effect>
         </p>
-        <effect cat="skirmish" why="avantage: grand" effect="+1k0 degats en melee"></effect>
-
-        <p></p>
 
       </div>
       <div class="secedit editbutton_section editbutton_17">
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Advantages] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="4417-4713">
+            <input type="hidden" name="range" value="4790-5059">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Advantages">
           </div>
@@ -527,21 +517,22 @@
 
         <p>
 
-        </p>
-        <effect cat="social" why="desavantage: can't lie" effect="ne peut pas mentir"></effect>
-        <effect cat="social" why="desavantage: credule" effect="TN -15, minimum 5 pour l'embobiner"></effect>
+          <effect cat="social" why="desavantage: can't lie" effect="ne peut pas mentir"> </effect>
+          <effect cat="social" why="desavantage: credule" effect="TN -15, minimum 5 pour l'embobiner"></effect>
 
-        <p></p>
+           
+          
+        </p>
 
       </div>
       <div class="secedit editbutton_section editbutton_18">
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Disadvantages] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="4714-5294">
+            <input type="hidden" name="range" value="5060-5623">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Disadvantages">
           </div>
@@ -567,10 +558,10 @@
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Equipment] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="5295-5355">
+            <input type="hidden" name="range" value="5624-5684">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Equipment">
           </div>
@@ -584,10 +575,10 @@
         <form class="button btn_secedit" method="post" action="/Dk/doku.php">
           <div class="no">
             <input type="hidden" name="do" value="edit">
-            <input type="hidden" name="rev" value="1414849331">
+            <input type="hidden" name="rev" value="1414942845">
             <input type="hidden" name="summary" value="[Notes] ">
             <input type="hidden" name="target" value="section">
-            <input type="hidden" name="range" value="5356-">
+            <input type="hidden" name="range" value="5685-">
             <input type="hidden" name="id" value="l5r:hida_makoto">
             <input type="submit" value="Edit" class="button" title="Notes">
           </div>

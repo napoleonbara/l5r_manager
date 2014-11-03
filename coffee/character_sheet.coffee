@@ -85,6 +85,13 @@ class CharacterSheet
       map[name] = properties.compute.call(map)
       @set(name, map[name])
   
+  hide_skills_zero: ->
+    @skills.find('.col2')
+      .filter ->
+        Number(trim($(this).text())) == 0
+      .parent()
+      .hide()
+  
 $ ->
 
   sheet = new CharacterSheet(PRIMARY_MAPPING, SECONDARY_MAPPING)
@@ -92,3 +99,5 @@ $ ->
   sheet.complete()
 
   sheet.regroup_effects('#fast_reference + div')
+  
+  sheet.hide_skills_zero()
