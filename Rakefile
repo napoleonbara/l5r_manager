@@ -22,6 +22,10 @@ file 'javascripts\\character_sheet.js' => [
   sh "coffee --map --compile --output javascripts\\ --join character_sheet.js #{t.sources.join(' ')}"
 end
 
+file 'javascripts\\expression_parser.js' => 'pegjs/expression.pegjs' do |t|
+  sh "pegjs -e expression_parser #{t.source} #{t.name}"
+end
+
 rule '.css' => CSS_TARGET_TO_SASS_SOURCE do |t|
   sh "sass #{t.source} #{t.name}"
 end
@@ -33,7 +37,10 @@ end
 
 task :css_build => CSS_TARGETS
 
-task :js_build => ['javascripts\\character_sheet.js', 'javascripts\\dices.js']
+task :js_build => [
+  'javascripts\\expression_parser.js',
+  'javascripts\\character_sheet.js',
+  'javascripts\\dices.js']
 
 task :build => [:css_build, :js_build]
 
