@@ -68,16 +68,36 @@ class CharacterSheet
     r
   
   format_effect: (str) ->
-    str = str.replace(/^\s+|\s+$/g, '')
-    str = '"' + str.replace(/#\{/g,'"+(').replace(/\}/g,')+"')+'"'
-    str = str.replace(/@/g, '_map_.')
-    _map_ = @map(@mapping, true)
-    try
-      str = eval(str)
-    catch err
-      str = err
-  
+    
+    expressions = str.match(/#\{[^\}]+\}/g)
+    
+    if expressions
+      map = merge_objects(@map(@mapping, true),
+        floor: Math.floor
+        ceil:  Math.ceil
+        max:   Math.max
+        min:   Math.min )
+    
+      values = for expression in expressions
+        expression = expression.replace('#{', '').replace('}', '')
+        parsed = expression_parser.parse(expression)
+        @evaluate(parsed, map)
+      
+      for i in [0...expressions.length]
+        str = str.replace(expressions[i], values[i])
+    
     return str
+    
+  evaluate: (tree, map) ->
+    switch tree.type
+      when 'symbol'       then map[tree.val]
+      when 'number'       then tree.val
+      when 'function call'then @evaluate(tree.func, map)(@evaluate(tree.arg, map))
+      when '*'            then @evaluate(tree.left, map) * @evaluate(tree.right, map)
+      when '/'            then @evaluate(tree.left, map) / @evaluate(tree.right, map)
+      when '+'            then @evaluate(tree.left, map) + @evaluate(tree.right, map)
+      when '-'            then @evaluate(tree.left, map) - @evaluate(tree.right, map)
+      when 'dot'          then @evaluate(tree.left, map)[tree.right.val]
     
   complete: ->
     map = @map(@primaries)

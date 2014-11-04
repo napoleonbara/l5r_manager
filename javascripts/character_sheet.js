@@ -597,18 +597,52 @@
     };
 
     CharacterSheet.prototype.format_effect = function(str) {
-      var err, _map_;
-      str = str.replace(/^\s+|\s+$/g, '');
-      str = '"' + str.replace(/#\{/g, '"+(').replace(/\}/g, ')+"') + '"';
-      str = str.replace(/@/g, '_map_.');
-      _map_ = this.map(this.mapping, true);
-      try {
-        str = eval(str);
-      } catch (_error) {
-        err = _error;
-        str = err;
+      var expression, expressions, i, map, parsed, values, _i, _ref;
+      expressions = str.match(/#\{[^\}]+\}/g);
+      if (expressions) {
+        map = merge_objects(this.map(this.mapping, true), {
+          floor: Math.floor,
+          ceil: Math.ceil,
+          max: Math.max,
+          min: Math.min
+        });
+        values = (function() {
+          var _i, _len, _results;
+          _results = [];
+          for (_i = 0, _len = expressions.length; _i < _len; _i++) {
+            expression = expressions[_i];
+            expression = expression.replace('#{', '').replace('}', '');
+            parsed = expression_parser.parse(expression);
+            _results.push(this.evaluate(parsed, map));
+          }
+          return _results;
+        }).call(this);
+        for (i = _i = 0, _ref = expressions.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+          str = str.replace(expressions[i], values[i]);
+        }
       }
       return str;
+    };
+
+    CharacterSheet.prototype.evaluate = function(tree, map) {
+      switch (tree.type) {
+        case 'symbol':
+          return map[tree.val];
+        case 'number':
+          return tree.val;
+        case 'function call':
+          return this.evaluate(tree.func, map)(this.evaluate(tree.arg, map));
+        case '*':
+          return this.evaluate(tree.left, map) * this.evaluate(tree.right, map);
+        case '/':
+          return this.evaluate(tree.left, map) / this.evaluate(tree.right, map);
+        case '+':
+          return this.evaluate(tree.left, map) + this.evaluate(tree.right, map);
+        case '-':
+          return this.evaluate(tree.left, map) - this.evaluate(tree.right, map);
+        case 'dot':
+          return this.evaluate(tree.left, map)[tree.right.val];
+      }
     };
 
     CharacterSheet.prototype.complete = function() {
