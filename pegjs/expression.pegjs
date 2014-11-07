@@ -15,9 +15,9 @@ mul_op
   / primary
 
 primary
-  = number
-  / function_call
-  / symbol
+  = function_call
+  / number
+  / variable
   / "(" _ exp:expression _ ")" { return exp; }
 
 function_call
@@ -30,7 +30,7 @@ function_call
     };
   }
 
-symbol
+variable
   = left:container right:symbol
   {
     return {
@@ -39,7 +39,10 @@ symbol
       right: right
     };
   }
-  / head:[a-z] tail:[a-z_]+
+  / symbol
+  
+symbol
+  = head:[a-z] tail:[a-z_]+
   {
     return {
       type: 'symbol',
