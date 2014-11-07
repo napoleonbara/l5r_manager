@@ -596,16 +596,20 @@
       return r;
     };
 
+    CharacterSheet.prototype.full_map = function() {
+      return merge_objects(this.map(this.mapping, true), {
+        floor: Math.floor,
+        ceil: Math.ceil,
+        max: Math.max,
+        min: Math.min
+      });
+    };
+
     CharacterSheet.prototype.format_effect = function(str) {
       var expression, expressions, i, map, parsed, values, _i, _ref;
       expressions = str.match(/#\{[^\}]+\}/g);
       if (expressions) {
-        map = merge_objects(this.map(this.mapping, true), {
-          floor: Math.floor,
-          ceil: Math.ceil,
-          max: Math.max,
-          min: Math.min
-        });
+        map = this.full_map();
         values = (function() {
           var _i, _len, _results;
           _results = [];

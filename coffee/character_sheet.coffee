@@ -67,16 +67,19 @@ class CharacterSheet
       r[s.var_name] = s.rank for s in @get('skills')
     r
   
+  full_map: ->
+    merge_objects(@map(@mapping, true),
+        floor: Math.floor
+        ceil:  Math.ceil
+        max:   Math.max
+        min:   Math.min )
+  
   format_effect: (str) ->
     
     expressions = str.match(/#\{[^\}]+\}/g)
     
     if expressions
-      map = merge_objects(@map(@mapping, true),
-        floor: Math.floor
-        ceil:  Math.ceil
-        max:   Math.max
-        min:   Math.min )
+      map = @full_map()
     
       values = for expression in expressions
         expression = expression.replace('#{', '').replace('}', '')
