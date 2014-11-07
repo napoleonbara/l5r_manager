@@ -112,6 +112,8 @@ class CharacterSheet
       .parent()
       .hide()
   
+sheet = null;
+  
 $ ->
 
   sheet = new CharacterSheet(PRIMARY_MAPPING, SECONDARY_MAPPING)
