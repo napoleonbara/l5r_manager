@@ -54,13 +54,13 @@ $ ->
 
       when 'trait roll'
 
-        roll: t.roll
-        keep: t.roll
+        roll: evaluate(t.roll)
+        keep: evaluate(t.roll)
         explode: t.explode
         modificators: t.modificators.map(evaluate)
 
       when 'flat roll'
-        roll: t.roll
+        roll: evaluate(t.roll)
       when 'dot'
         evaluate(t.left)[evaluate(t.right)]
       when '+'

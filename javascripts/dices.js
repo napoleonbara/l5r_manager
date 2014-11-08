@@ -57,14 +57,14 @@
           };
         case 'trait roll':
           return {
-            roll: t.roll,
-            keep: t.roll,
+            roll: evaluate(t.roll),
+            keep: evaluate(t.roll),
             explode: t.explode,
             modificators: t.modificators.map(evaluate)
           };
         case 'flat roll':
           return {
-            roll: t.roll
+            roll: evaluate(t.roll)
           };
         case 'dot':
           return evaluate(t.left)[evaluate(t.right)];
