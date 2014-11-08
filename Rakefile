@@ -80,8 +80,10 @@ file 'javascripts/dice_roller_parser.js' => 'pegjs/dice_roller_parser.pegjs' do 
   sh "pegjs -e dice_roller_parser #{t.source} #{t.name}"
 end
 
-rule '.js' => JS_TARGET_TO_COFFEE_SOURCE do |t|
-  sh "coffee --map --compile --output javascripts\\ #{t.source}"
+file 'javascripts/dices.js' => [
+  'coffee/helpers.coffee',
+  'coffee/dices.coffee'] do |t|
+  sh "coffee --map --compile --output javascripts\\ --join dices.js #{t.sources.join(' ')}"
 end
 
                                   ##### CSS #####
