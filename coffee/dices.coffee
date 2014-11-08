@@ -35,8 +35,8 @@ $ ->
       dices = roll_each_die(roll).sort((a,b) -> a < b)
       
       out.html("<div id='summary'>#{roll.roll}K#{roll.keep}:<div>
-               <table><tr></tr></table>
-               <div id='dices_sum'><div>")
+        <table><tr></tr></table>
+        <div id='dices_sum'><div>")
                
       row = out.find("tr")
 
