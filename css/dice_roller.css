@@ -1,29 +1,12 @@
-#roll-spinner, #keep-spinner {
-  width: 1.5em; }
-
-#dices tr {
-  line-height: 100%; }
-
-#dices td {
-  padding: 0.5em;
-  width: 2em;
-  border: 1px solid black;
-  text-align: center; }
-
-#dices td.empty {
-  border: none; }
-
-#dices td.keep {
-  background-color: lightgrey;
-  font-weight: bold; }
-
-#dices td.sum {
-  border: none;
+td.keep {
   font-weight: bold;
-  width: 5.5em; }
+  background-color: lightgrey; }
 
-#dices td.sum::before {
-  content: "result: ";
+#dice_result {
+  margin: 10px; }
+
+#dices_sum {
+  margin: 7px;
   font-weight: bold; }
 
 /*# sourceMappingURL=dice_roller.css.map */

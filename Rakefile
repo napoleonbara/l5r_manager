@@ -29,6 +29,8 @@ task :build => [:css_build, :js_build, :test_build]
 
 task :clean => [:css_clean, :js_clean, :test_clean]
 
+task :rebuild => [:clean, :build]
+
 task :css_clean do
   sh 'del /Q css\\*'
 end
@@ -65,7 +67,8 @@ file 'javascripts/character_sheet.js' => [
   'coffee/skills_data.coffee',
   'coffee/helpers.coffee',
   'coffee/character_sheet_mapping.coffee',
-  'coffee/character_sheet.coffee'] do |t|
+  'coffee/character_sheet.coffee',
+  'coffee/dices.coffee'] do |t|
   sh "coffee --map --compile --output javascripts\\ --join character_sheet.js #{t.sources.join(' ')}"
 end
 

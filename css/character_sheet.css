@@ -1,3 +1,14 @@
+td.keep {
+  font-weight: bold;
+  background-color: lightgrey; }
+
+#dice_result {
+  margin: 10px; }
+
+#dices_sum {
+  margin: 7px;
+  font-weight: bold; }
+
 .effects {
   display: none; }
 

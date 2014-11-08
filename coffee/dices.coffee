@@ -1,76 +1,62 @@
 $ ->
-  shuffle = (array) ->
-    currentIndex = array.length
+  parse = dice_roller_parser.parse
+    
+  evaluate = (t) ->
+    switch t.type
+      when 'number' then Number(t.value)
+      when 'symbol' then sheet.full_map()[t.value]
+      when 'explicit roll'
 
-    # While there remain elements to shuffle...
-    while 0 != currentIndex
-      # Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex)
-      currentIndex -= 1
+        roll: evaluate(t.roll)
+        keep: evaluate(t.keep)
+        explode: t.explode
+      when 'skill roll'
+        a = evaluate(t.trait);
+        b = evaluate(t.skill);
 
-      # And swap it with the current element.
-      temporaryValue = array[currentIndex]
-      array[currentIndex] = array[randomIndex]
-      array[randomIndex] = temporaryValue
+        roll: a + b
+        keep: a
+        explode: t.explode
 
-    array.filter( (e)-> e? )
-
-
-$ ->
-  $('#roll-spinner, #keep-spinner').spinner(
-    max: 10
-    min: 1
-  ).spinner('value', 1);
+  get_dice_result = ->
+    r = 0
+    $("#dice_result td").each ->
+      if $(this).hasClass('keep')
+        r += Number($(this).text())
+    $('#dices_sum').text("result: "+r)
   
-  $('#roll-button').click( ->
-    to_roll = $('#roll-spinner').spinner('value')
-    to_keep = $('#keep-spinner').spinner('value')
-    explode = $('#explode-checkbox').prop('checked')
-    dont_sort = $('#dont-sort-checkbox').prop('checked')
-    loose_biggest = $('#loose-biggest-checkbox').prop('checked')
+  $('#dice_roller input[type=button]').click ->
+    input = $("#dice_roller input[type=text]").val()
+    out = $("#dice_result")
+    if input.length
+      t = parse(input)
+      roll = evaluate(t)
 
-    roll_method = if explode then exploding_d10_roll else fair_d10_roll
-    rolls = (roll_method() for i in [0...to_roll])
+      dices = roll_each_die(roll).sort((a,b) -> a < b)
+      
+      out.html("<div id='summary'>#{roll.roll}K#{roll.keep}:<div>"
+               "<table><tr></tr></table>"
+               "<div id='dices_sum'><div>")
+               
+      row = out.find("tr")
 
-    results = (rolls[i] for i in [0...10])
-    
-    results = results
-      .sort( (a,b) -> a < b )
-      .map( (e, i) ->
-        keep: i < to_keep
-        result: e
-      )
-    
-    if loose_biggest
-      results.forEach( (e, i) ->
-        e.keep = (0 < i and i < to_keep + 1)
-      )
+      for i in [0...roll.roll]
+        row.append('<td>'+dices[i]+'</td>')
 
-    if dont_sort
-      results = shuffle(results)
-      results.forEach( (e, i) -> e.keep = false )
+      row.find('td')
+        .click ->
+          $(this).toggleClass('keep')
+          get_dice_result()
 
-    final_result = results
-      .map( (p) -> if p.keep then p.result else 0 )
-      .reduce( ((p,c) -> c + p), 0 )
+      for i in [0...roll.keep]
+        row.find("td:nth-child(#{i+1})").toggleClass('keep')
 
-    $row = $('<tr></tr>')
-      .prependTo('#result')
-        
-    $(results).each( (i,e) ->
-      if e.result?
-        $("<td>#{e.result}</td>")
-          .toggleClass('keep', e.keep)
-          .appendTo($row)
-      else
-        $('<td class="empty"></td>').appendTo($row)
+      get_dice_result()
 
-    )
-    
-    $("<td class='sum'>#{final_result}</td>").appendTo($row)
-    
-  )
-  
+  roll_each_die = (roll) ->
+    roll_method = if roll.explode then exploding_d10_roll else fair_d10_roll
+    (roll_method() for i in [0...roll.roll])
+
   exploding_d10_roll = (threshold = 10) ->
     re_roll = true
     result = 0
@@ -81,4 +67,5 @@ $ ->
     result
   
   fair_d10_roll = () -> Math.floor(Math.random() * 10) + 1
+
 

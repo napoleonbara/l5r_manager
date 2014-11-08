@@ -115,9 +115,11 @@ class CharacterSheet
       .parent()
       .hide()
   
+sheet = null
+  
 $ ->
 
-  window.sheet = sheet = new CharacterSheet(PRIMARY_MAPPING, SECONDARY_MAPPING)
+  sheet = new CharacterSheet(PRIMARY_MAPPING, SECONDARY_MAPPING)
 
   sheet.complete()
 
