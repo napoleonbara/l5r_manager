@@ -61,6 +61,7 @@ $ ->
 
       when 'flat roll'
         roll: evaluate(t.roll)
+        explode: false
       when 'dot'
         evaluate(t.left)[evaluate(t.right)]
       when '+'
@@ -97,29 +98,33 @@ $ ->
     input = $("#dice_roller input[type=text]").val()
     out = $("#dice_result")
     if input.length
-      t = parse(input)
-      roll = evaluate_roll(t)
-
-      dices = roll_each_die(roll).sort((a,b) -> a < b)
+      try
+        t = parse(input)
+        roll = evaluate_roll(t)
+         
+        dices = roll_each_die(roll).sort((a,b) -> a < b)
       
-      out.html("<div id='summary'>#{roll.roll}K#{roll.keep}:<div>
-        <table><tr></tr></table>
-        <div id='dices_sum'><div>")
-               
-      row = out.find("tr")
-
-      for i in [0...roll.roll]
-        row.append('<td>'+dices[i]+'</td>')
-
-      row.find('td')
-        .click ->
-          $(this).toggleClass('keep')
-          get_dice_result(roll.roll_modificator)
-
-      for i in [0...roll.keep]
-        row.find("td:nth-child(#{i+1})").toggleClass('keep')
-
-      get_dice_result(roll.roll_modificator)
+        out.html("<div id='summary'>#{roll.roll}K#{roll.keep}:<div>
+          <table><tr></tr></table>
+          <div id='dices_sum'><div>")
+                 
+        row = out.find("tr")
+  
+        for i in [0...roll.roll]
+          row.append('<td>'+dices[i]+'</td>')
+  
+        row.find('td')
+          .click ->
+            $(this).toggleClass('keep')
+            get_dice_result(roll.roll_modificator)
+  
+        for i in [0...roll.keep]
+          row.find("td:nth-child(#{i+1})").toggleClass('keep')
+  
+        get_dice_result(roll.roll_modificator)
+      
+      catch
+        out.html("<div id='summary'>don't know how to roll #{input}</div>")
 
   roll_each_die = (roll) ->
     roll_method = if roll.explode then exploding_d10_roll else fair_d10_roll

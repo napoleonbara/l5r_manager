@@ -745,7 +745,8 @@
           };
         case 'flat roll':
           return {
-            roll: evaluate(t.roll)
+            roll: evaluate(t.roll),
+            explode: false
           };
         case 'dot':
           return evaluate(t.left)[evaluate(t.right)];
@@ -796,24 +797,28 @@
       input = $("#dice_roller input[type=text]").val();
       out = $("#dice_result");
       if (input.length) {
-        t = parse(input);
-        roll = evaluate_roll(t);
-        dices = roll_each_die(roll).sort(function(a, b) {
-          return a < b;
-        });
-        out.html("<div id='summary'>" + roll.roll + "K" + roll.keep + ":<div>        <table><tr></tr></table>        <div id='dices_sum'><div>");
-        row = out.find("tr");
-        for (i = _i = 0, _ref = roll.roll; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-          row.append('<td>' + dices[i] + '</td>');
-        }
-        row.find('td').click(function() {
-          $(this).toggleClass('keep');
+        try {
+          t = parse(input);
+          roll = evaluate_roll(t);
+          dices = roll_each_die(roll).sort(function(a, b) {
+            return a < b;
+          });
+          out.html("<div id='summary'>" + roll.roll + "K" + roll.keep + ":<div>          <table><tr></tr></table>          <div id='dices_sum'><div>");
+          row = out.find("tr");
+          for (i = _i = 0, _ref = roll.roll; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+            row.append('<td>' + dices[i] + '</td>');
+          }
+          row.find('td').click(function() {
+            $(this).toggleClass('keep');
+            return get_dice_result(roll.roll_modificator);
+          });
+          for (i = _j = 0, _ref1 = roll.keep; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+            row.find("td:nth-child(" + (i + 1) + ")").toggleClass('keep');
+          }
           return get_dice_result(roll.roll_modificator);
-        });
-        for (i = _j = 0, _ref1 = roll.keep; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
-          row.find("td:nth-child(" + (i + 1) + ")").toggleClass('keep');
+        } catch (_error) {
+          return out.html("<div id='summary'>don't know how to roll " + input + "</div>");
         }
-        return get_dice_result(roll.roll_modificator);
       }
     });
     roll_each_die = function(roll) {
