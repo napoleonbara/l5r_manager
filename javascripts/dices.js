@@ -26,7 +26,7 @@
         roll_modificator: 0,
         modificators: []
       }, evaluate(t));
-      tmp.forEach(function(m) {
+      tmp.modificators.forEach(function(m) {
         return apply_modificator(tmp, m);
       });
       delete tmp.modificators;

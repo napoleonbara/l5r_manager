@@ -25,7 +25,7 @@ $ ->
       },
       evaluate(t))
     
-    tmp.forEach (m) ->
+    tmp.modificators.forEach (m) ->
       apply_modificator(tmp, m)
     
     delete tmp.modificators
