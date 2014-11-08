@@ -800,9 +800,12 @@
         try {
           t = parse(input);
           roll = evaluate_roll(t);
-          dices = roll_each_die(roll).sort(function(a, b) {
-            return a < b;
-          });
+          dices = roll_each_die(roll);
+          if (roll.type !== 'flat roll') {
+            dices = dices.sort(function(a, b) {
+              return a < b;
+            });
+          }
           out.html("<div id='summary'>" + roll.roll + "K" + roll.keep + ":<div>          <table><tr></tr></table>          <div id='dices_sum'><div>");
           row = out.find("tr");
           for (i = _i = 0, _ref = roll.roll; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {

@@ -102,7 +102,9 @@ $ ->
         t = parse(input)
         roll = evaluate_roll(t)
          
-        dices = roll_each_die(roll).sort((a,b) -> a < b)
+        dices = roll_each_die(roll)
+        
+        unless roll.type == 'flat roll' then dices = dices.sort((a,b) -> a < b)
       
         out.html("<div id='summary'>#{roll.roll}K#{roll.keep}:<div>
           <table><tr></tr></table>
