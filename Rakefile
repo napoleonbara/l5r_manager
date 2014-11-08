@@ -3,10 +3,6 @@ def change_folder_and_extention(path, file, current_ext, ext)
   result = File.join(path, File.basename(file, current_ext)) + ext
 end
 
-SASS_SOURCES = Dir['sass/*.sass']
-SASS_SOURCE_TO_CSS_TARGET = ->(t){change_folder_and_extention('css', t, '.sass', '.css')}
-CSS_TARGET_TO_SASS_SOURCE = ->(t){change_folder_and_extention('sass', t, '.css', '.sass')}
-CSS_TARGETS = SASS_SOURCES.map(&SASS_SOURCE_TO_CSS_TARGET)
 
 COFFEE_SOURCES = Dir['coffee/*.coffee']
 COFFEE_SOURCE_TO_JS_TARGET = ->(t){change_folder_and_extention('javascripts', t, '.coffee', '.js')}
@@ -14,7 +10,10 @@ JS_TARGET_TO_COFFEE_SOURCE = ->(t){change_folder_and_extention('coffee', t, '.js
 JS_TARGETS = COFFEE_SOURCES.map(&COFFEE_SOURCE_TO_JS_TARGET)
 
 
-task :css_build => CSS_TARGETS
+task :css_build => [
+  'css/character_sheet.css',
+  'css/dice_roller.css'
+]
 
 task :js_build => [
   'javascripts/expression_parser.js',
@@ -76,18 +75,21 @@ file 'javascripts/expression_parser.js' => 'pegjs/expression.pegjs' do |t|
   sh "pegjs -e expression_parser #{t.source} #{t.name}"
 end
 
-rule '.js' => JS_TARGET_TO_COFFEE_SOURCE do |t|
-  sh "coffee --map --compile --output javascripts\\ #{t.source}"
-end
-
 file 'javascripts/dice_roller_parser.js' => 'pegjs/dice_roller_parser.pegjs' do |t|
   
   sh "pegjs -e dice_roller_parser #{t.source} #{t.name}"
 end
 
-                                  ##### CSS #####
-
-rule '.css' => CSS_TARGET_TO_SASS_SOURCE do |t|
-  sh "sass #{t.source} #{t.name}"
+rule '.js' => JS_TARGET_TO_COFFEE_SOURCE do |t|
+  sh "coffee --map --compile --output javascripts\\ #{t.source}"
 end
 
+                                  ##### CSS #####
+
+file 'css/character_sheet.css' => ['sass/character_sheet.sass', 'sass/dice_roller.sass'] do
+  sh "sass sass\\character_sheet.sass css\\character_sheet.css"
+end
+
+file 'css/dice_roller.css' => 'sass/dice_roller.sass' do
+  sh "sass sass\\dice_roller.sass css\\dice_roller.css"
+end
