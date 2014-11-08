@@ -801,7 +801,7 @@
           t = parse(input);
           roll = evaluate_roll(t);
           dices = roll_each_die(roll);
-          if (roll.type !== 'flat roll') {
+          if (t.type !== 'flat roll') {
             dices = dices.sort(function(a, b) {
               return a < b;
             });
