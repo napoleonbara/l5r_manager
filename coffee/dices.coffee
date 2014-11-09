@@ -35,7 +35,12 @@ $ ->
   evaluate = (t) ->
     switch t.type
       when 'number' then Number(t.value)
-      when 'symbol' then sheet.full_map()[t.value]
+      when 'symbol'
+        n = t.value
+        map = sheet.full_map()
+        unless map.haOwnProperty(n) then throw "Don't know symbol \"#{n}\""
+        map[n]
+        
       when 'explicit roll'
 
         roll: evaluate(t.roll)
@@ -125,8 +130,13 @@ $ ->
   
         get_dice_result(roll.roll_modificator)
       
-      catch
-        out.html("<div id='summary'>don't know how to roll #{input}</div>")
+      catch err
+        message = switch
+          when err.instanceOf(SyntaxError)
+            "Don't know how to roll \"#{input}\""
+          else
+            err
+        out.html("<div id='summary'>#{message}</div>")
 
   roll_each_die = (roll) ->
     roll_method = if roll.explode then exploding_d10_roll else fair_d10_roll

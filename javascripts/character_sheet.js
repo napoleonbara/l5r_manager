@@ -714,12 +714,17 @@
       return tmp;
     };
     evaluate = function(t) {
-      var a, b;
+      var a, b, map, n;
       switch (t.type) {
         case 'number':
           return Number(t.value);
         case 'symbol':
-          return sheet.full_map()[t.value];
+          n = t.value;
+          map = sheet.full_map();
+          if (!map.haOwnProperty(n)) {
+            throw "Don't know symbol \"" + n + "\"";
+          }
+          return map[n];
         case 'explicit roll':
           return {
             roll: evaluate(t.roll),
@@ -793,7 +798,7 @@
       return $('#dices_sum').text("result: " + r);
     };
     $('#dice_roller input[type=button]').click(function() {
-      var dices, i, input, out, roll, row, t, _i, _j, _ref, _ref1;
+      var dices, err, i, input, message, out, roll, row, t, _i, _j, _ref, _ref1;
       input = $("#dice_roller input[type=text]").val();
       out = $("#dice_result");
       if (input.length) {
@@ -820,7 +825,16 @@
           }
           return get_dice_result(roll.roll_modificator);
         } catch (_error) {
-          return out.html("<div id='summary'>don't know how to roll " + input + "</div>");
+          err = _error;
+          message = (function() {
+            switch (false) {
+              case !err.instanceOf(SyntaxError):
+                return "Don't know how to roll \"" + input + "\"";
+              default:
+                return err;
+            }
+          })();
+          return out.html("<div id='summary'>" + message + "</div>");
         }
       }
     });
