@@ -85,7 +85,7 @@
         case 'symbol':
           n = t.value;
           map = sheet.full_map();
-          if (!map.haOwnProperty(n)) {
+          if (!map.hasOwnProperty(n)) {
             throw "Don't know symbol \"" + n + "\"";
           }
           return map[n];

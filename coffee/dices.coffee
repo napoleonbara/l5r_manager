@@ -38,7 +38,7 @@ $ ->
       when 'symbol'
         n = t.value
         map = sheet.full_map()
-        unless map.haOwnProperty(n) then throw "Don't know symbol \"#{n}\""
+        unless map.hasOwnProperty(n) then throw "Don't know symbol \"#{n}\""
         map[n]
         
       when 'explicit roll'
