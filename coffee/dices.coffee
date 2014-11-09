@@ -132,7 +132,7 @@ $ ->
       
       catch err
         message = switch
-          when err.instanceOf(SyntaxError)
+          when err.name == "SyntaxError"
             "Don't know how to roll \"#{input}\""
           else
             err

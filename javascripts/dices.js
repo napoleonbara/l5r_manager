@@ -192,7 +192,7 @@
           err = _error;
           message = (function() {
             switch (false) {
-              case !err.instanceOf(SyntaxError):
+              case err.name !== "SyntaxError":
                 return "Don't know how to roll \"" + input + "\"";
               default:
                 return err;
