@@ -9,4 +9,7 @@ td.keep {
   margin: 7px;
   font-weight: bold; }
 
+#dice_roller input[type=text] {
+  width: 30em; }
+
 /*# sourceMappingURL=dice_roller.css.map */
