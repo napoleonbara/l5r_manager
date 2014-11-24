@@ -662,7 +662,7 @@
     };
 
     CharacterSheet.prototype.apply_rules = function() {
-      var i, id, ids, rule, rules, _i, _len, _results;
+      var i, id, ids, rule, rules, _i, _len;
       i = 0;
       ids = (function() {
         var _results;
@@ -672,15 +672,16 @@
         }
         return _results;
       })();
-      rules = $(ids.join(', ')).next().find('p').map(function() {
+      rules = $(ids.join(', ')).next().find('li').map(function() {
         return String.trim($(this).text());
       }).toArray();
-      _results = [];
       for (_i = 0, _len = rules.length; _i < _len; _i++) {
         rule = rules[_i];
-        _results.push(this.handle_rule(rule));
+        this.handle_rule(rule);
+        $('#fast_reference + div ul').append("<li>" + rule + "</li>");
       }
-      return _results;
+      $(ids.join(', ')).hide();
+      return $(ids.join(', ')).hide();
     };
 
     CharacterSheet.prototype.put_notes = function() {
@@ -694,7 +695,7 @@
         }
         return _results;
       })();
-      notes = $(ids.join(', ')).next().find('p').map(function() {
+      notes = $(ids.join(', ')).next().find('li').map(function() {
         return String.trim($(this).text());
       }).toArray();
       _results = [];

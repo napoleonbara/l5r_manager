@@ -100,16 +100,21 @@
     i = 0
     ids = while (id = "#rules#{if i > 0 then i else ''}"; i++; $(id).length > 0)
       id
-    rules = $(ids.join(', ')).next().find('p').map(-> String.trim($(@).text())).toArray()
+    rules = $(ids.join(', ')).next().find('li').map(-> String.trim($(@).text())).toArray()
 
     for rule in rules
       @handle_rule(rule)
+      $('#fast_reference + div ul').append("<li>#{rule}</li>")
+
+    $(ids.join(', ')).hide()
+    $(ids.join(', ')).hide()
+
 
   put_notes: ->
     i = 0
     ids = while (id = "#notes#{if i > 0 then i else ''}"; i++; $(id).length > 0)
       id
-    notes = $(ids.join(', ')).next().find('p').map(-> String.trim($(@).text())).toArray()
+    notes = $(ids.join(', ')).next().find('li').map(-> String.trim($(@).text())).toArray()
 
     for note in notes
       $('#fast_reference + div ul').append("<li>#{note}</li>")
