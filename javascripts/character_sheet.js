@@ -591,7 +591,14 @@
         }
       }
       sheet.apply_rules();
-      return sheet.put_notes();
+      sheet.put_notes();
+      return $("#skills + div .table:nth-of-type(1) tr:gt(0)").each(function(i, e) {
+        var $row;
+        $row = $(e);
+        if (Number($(e).find('.col2').text()) === 0) {
+          return $row.hide();
+        }
+      });
     };
 
     CharacterSheet.prototype.evaluation_context = function() {

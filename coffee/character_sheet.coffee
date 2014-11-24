@@ -57,6 +57,14 @@
 
     sheet.apply_rules()
     sheet.put_notes()
+    
+    # hide skills 0
+    
+    $("#skills + div .table:nth-of-type(1) tr:gt(0)")
+      .each (i, e) ->
+        $row = $(e)
+        if Number($(e).find('.col2').text()) == 0
+          $row.hide()
   
 
   evaluation_context: ->
