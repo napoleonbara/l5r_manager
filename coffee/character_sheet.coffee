@@ -119,6 +119,8 @@
     for note in notes
       $('#fast_reference + div ul').append("<li>#{note}</li>")
 
+    $(ids.join(', ')).hide()
+    $(ids.join(', ')).next().hide()
 
 $ ->
 

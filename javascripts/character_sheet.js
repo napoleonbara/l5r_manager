@@ -685,7 +685,7 @@
     };
 
     CharacterSheet.prototype.put_notes = function() {
-      var i, id, ids, note, notes, _i, _len, _results;
+      var i, id, ids, note, notes, _i, _len;
       i = 0;
       ids = (function() {
         var _results;
@@ -698,12 +698,12 @@
       notes = $(ids.join(', ')).next().find('li').map(function() {
         return String.trim($(this).text());
       }).toArray();
-      _results = [];
       for (_i = 0, _len = notes.length; _i < _len; _i++) {
         note = notes[_i];
-        _results.push($('#fast_reference + div ul').append("<li>" + note + "</li>"));
+        $('#fast_reference + div ul').append("<li>" + note + "</li>");
       }
-      return _results;
+      $(ids.join(', ')).hide();
+      return $(ids.join(', ')).next().hide();
     };
 
     return CharacterSheet;
