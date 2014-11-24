@@ -107,7 +107,7 @@
       $('#fast_reference + div ul').append("<li>#{rule}</li>")
 
     $(ids.join(', ')).hide()
-    $(ids.join(', ')).hide()
+    $(ids.join(', ')).next().hide()
 
 
   put_notes: ->

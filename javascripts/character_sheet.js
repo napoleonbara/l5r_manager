@@ -681,7 +681,7 @@
         $('#fast_reference + div ul').append("<li>" + rule + "</li>");
       }
       $(ids.join(', ')).hide();
-      return $(ids.join(', ')).hide();
+      return $(ids.join(', ')).next().hide();
     };
 
     CharacterSheet.prototype.put_notes = function() {
