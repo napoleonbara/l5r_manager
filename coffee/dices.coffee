@@ -47,7 +47,7 @@ $ ->
     dice = roll_each_die(result)
     roll_num = dice.length
 
-    out.html("<div id='summary'>#{roll_num}D10:<div>
+    out.html("<div id='summary'>#{result.to_string()}:<div>
               <table><tr></tr></table>
               <div id='dices_sum'><div>")
 
@@ -59,9 +59,9 @@ $ ->
     out = $("#dice_result")
     dice = roll_each_die(result)
     roll_num = dice.length
-    keep_num = result.keep['10']
+    keep_num = result.keep
 
-    out.html("<div id='summary'>#{roll_num}K#{keep_num}:<div>
+    out.html("<div id='summary'>#{result.to_string()}:<div>
               <table><tr></tr></table>
               <div id='dices_sum'><div>")
 
@@ -80,21 +80,22 @@ $ ->
     get_dice_result(result.roll_modif)
 
   roll_each_die = (roll) ->
-    roll_num = roll.roll['10']
-    roll_method = if roll.explode then exploding_d10_roll else fair_d10_roll
-    dices = (roll_method(roll.explosion_threshold) for i in [0...roll_num])
+    roll_num = roll.roll
+    roll_method = if roll.explode then exploding_roll else fair_roll
+    dices = (roll_method(roll.type, roll.explosion_threshold) for i in [0...roll_num])
     dices.map((d)-> d + roll.dice_modif)
 
 
-  exploding_d10_roll = (threshold = 10) ->
+  exploding_roll = (type = 6, threshold = null) ->
+    threshold ?= type
     re_roll = true
     result = 0
     while re_roll
-      r = fair_d10_roll()
+      r = fair_roll(type)
       result += r
       re_roll = r >= threshold
     result
   
-  fair_d10_roll = () -> Math.floor(Math.random() * 10) + 1
+  fair_roll = (type = 6) -> Math.floor(Math.random() * type) + 1
 
 

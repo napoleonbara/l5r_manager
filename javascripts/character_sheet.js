@@ -301,7 +301,7 @@
   };
 
   $(function() {
-    var exploding_d10_roll, fair_d10_roll, get_dice_result, put_number_result, roll_basic, roll_each_die, roll_l5r;
+    var exploding_roll, fair_roll, get_dice_result, put_number_result, roll_basic, roll_each_die, roll_l5r;
     get_dice_result = function(roll_modificator) {
       var r;
       r = roll_modificator;
@@ -354,7 +354,7 @@
       out = $("#dice_result");
       dice = roll_each_die(result);
       roll_num = dice.length;
-      out.html("<div id='summary'>" + roll_num + "D10:<div>              <table><tr></tr></table>              <div id='dices_sum'><div>");
+      out.html("<div id='summary'>" + (result.to_string()) + ":<div>              <table><tr></tr></table>              <div id='dices_sum'><div>");
       row = out.find("tr");
       _results = [];
       for (i = _i = 0; 0 <= roll_num ? _i < roll_num : _i > roll_num; i = 0 <= roll_num ? ++_i : --_i) {
@@ -367,8 +367,8 @@
       out = $("#dice_result");
       dice = roll_each_die(result);
       roll_num = dice.length;
-      keep_num = result.keep['10'];
-      out.html("<div id='summary'>" + roll_num + "K" + keep_num + ":<div>              <table><tr></tr></table>              <div id='dices_sum'><div>");
+      keep_num = result.keep;
+      out.html("<div id='summary'>" + (result.to_string()) + ":<div>              <table><tr></tr></table>              <div id='dices_sum'><div>");
       row = out.find("tr");
       for (i = _i = 0; 0 <= roll_num ? _i < roll_num : _i > roll_num; i = 0 <= roll_num ? ++_i : --_i) {
         row.append('<td>' + dice[i] + '</td>');
@@ -384,13 +384,13 @@
     };
     roll_each_die = function(roll) {
       var dices, i, roll_method, roll_num;
-      roll_num = roll.roll['10'];
-      roll_method = roll.explode ? exploding_d10_roll : fair_d10_roll;
+      roll_num = roll.roll;
+      roll_method = roll.explode ? exploding_roll : fair_roll;
       dices = (function() {
         var _i, _results;
         _results = [];
         for (i = _i = 0; 0 <= roll_num ? _i < roll_num : _i > roll_num; i = 0 <= roll_num ? ++_i : --_i) {
-          _results.push(roll_method(roll.explosion_threshold));
+          _results.push(roll_method(roll.type, roll.explosion_threshold));
         }
         return _results;
       })();
@@ -398,22 +398,31 @@
         return d + roll.dice_modif;
       });
     };
-    exploding_d10_roll = function(threshold) {
+    exploding_roll = function(type, threshold) {
       var r, re_roll, result;
+      if (type == null) {
+        type = 6;
+      }
       if (threshold == null) {
-        threshold = 10;
+        threshold = null;
+      }
+      if (threshold == null) {
+        threshold = type;
       }
       re_roll = true;
       result = 0;
       while (re_roll) {
-        r = fair_d10_roll();
+        r = fair_roll(type);
         result += r;
         re_roll = r >= threshold;
       }
       return result;
     };
-    return fair_d10_roll = function() {
-      return Math.floor(Math.random() * 10) + 1;
+    return fair_roll = function(type) {
+      if (type == null) {
+        type = 6;
+      }
+      return Math.floor(Math.random() * type) + 1;
     };
   });
 
@@ -929,25 +938,16 @@
           return stack.push(top);
         },
         pool_roll: function(copy, stack, top, args) {
-          var keep, roll;
-          roll = {};
-          roll[args[0]] = args[1];
-          keep = {};
-          keep[args[0]] = args[1];
           return stack.push(new Roll({
-            roll: roll,
-            keep: keep,
+            roll: args[1],
+            type: args[0],
             mode: 'basic'
           }));
         },
         roll_and_keep: function(copy, stack, top, args) {
           return stack.push(new Roll({
-            roll: {
-              10: args[1]
-            },
-            keep: {
-              10: args[0]
-            },
+            roll: args[1],
+            keep: args[0],
             mode: 'L5R',
             explosion_threshold: 10,
             explode: true
@@ -997,12 +997,8 @@
     function Roll(opts) {
       Object.merge_with(this, {
         mode: 'basic',
-        roll: {
-          6: 1
-        },
-        keep: {
-          6: 1
-        },
+        roll: 1,
+        type: 6,
         sum: false,
         dice_modif: 0,
         roll_modif: 0,
@@ -1013,8 +1009,8 @@
 
     Roll.prototype.add_roll = function(other) {
       Object.merge_with(this, {
-        roll: Roll.merge_dice_pools(this.roll, other.roll),
-        keep: Roll.merge_dice_pools(this.keep, other.keep),
+        roll: this.roll + other.roll,
+        keep: this.keep + other.keep,
         sum: this.sum || other.sum,
         dice_modif: this.dice_modif + other.dice_modif,
         roll_modif: this.roll_modif + other.roll_modif,
@@ -1038,8 +1034,8 @@
 
     Roll.prototype.sub_roll = function(other) {
       Object.merge_with(this, {
-        roll: Roll.subtract_dice_pools(this.roll, other.roll),
-        keep: Roll.subtract_dice_pools(this.keep, other.keep),
+        roll: this.roll - other.roll,
+        keep: this.keep - other.keep,
         sum: this.sum || other.sum,
         dice_modif: this.dice_modif - other.dice_modif,
         roll_modif: this.roll_modif - other.roll_modif,
@@ -1047,6 +1043,24 @@
         explosion_threshold: Math.min(this.explosion_threshold, other.explosion_threshold)
       });
       return this;
+    };
+
+    Roll.prototype.to_string = function() {
+      var dm, et, exp, rm;
+      switch (this.mode) {
+        case 'basic':
+          exp = this.explode ? '!' : '';
+          dm = this.dice_modif !== 0 ? "^" + this.dice_modif : '';
+          rm = this.roll_modif !== 0 ? "" + (this.roll_modif > 0 ? '+' : '') + this.roll_modif : '';
+          et = this.explosion_threshold !== this.type ? "!" + this.explosion_threshold : '';
+          return "" + exp + this.roll + "D" + this.type + dm + et + rm;
+        case 'L5R':
+          exp = !this.explode ? '!' : '';
+          dm = this.dice_modif !== 0 ? "^" + this.dice_modif : '';
+          rm = this.roll_modif !== 0 ? "" + (this.roll_modif > 0 ? '+' : '') + this.roll_modif : '';
+          et = this.explosion_threshold !== 10 ? "!" + this.explosion_threshold : '';
+          return "" + exp + this.roll + "K" + this.keep + dm + et + rm;
+      }
     };
 
     return Roll;

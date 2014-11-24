@@ -69,12 +69,8 @@
           eight: 8
         };
         return expect(e.evaluate(ctx)).toEqual(new Roll({
-          roll: {
-            8: 3
-          },
-          keep: {
-            8: 3
-          }
+          roll: 3,
+          type: 8
         }));
       });
       it('generates non explosive rolls by default', function() {
@@ -95,12 +91,8 @@
         };
         return expect(e.evaluate(ctx)).toEqual(new Roll({
           mode: 'L5R',
-          roll: {
-            10: 8
-          },
-          keep: {
-            10: 3
-          },
+          roll: 8,
+          keep: 3,
           explosion_threshold: 10,
           explode: true
         }));
@@ -114,12 +106,8 @@
         };
         return expect(e.evaluate(ctx)).toEqual(new Roll({
           mode: 'L5R',
-          roll: {
-            10: 5
-          },
-          keep: {
-            10: 2
-          },
+          roll: 5,
+          keep: 2,
           explosion_threshold: 10,
           explode: true
         }));
@@ -181,12 +169,8 @@
         };
         return expect(e.evaluate(ctx)).toEqual(new Roll({
           mode: 'L5R',
-          roll: {
-            10: 4 + 1
-          },
-          keep: {
-            10: 3 + 2
-          },
+          roll: 4 + 1,
+          keep: 3 + 2,
           explosion_threshold: 10,
           explode: true
         }));

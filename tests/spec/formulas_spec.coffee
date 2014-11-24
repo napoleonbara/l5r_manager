@@ -56,7 +56,7 @@ describe "Expression", ->
       ctx =
         three: 3
         eight: 8
-      expect(e.evaluate(ctx)).toEqual new Roll(roll: {8: 3}, keep: {8: 3})
+      expect(e.evaluate(ctx)).toEqual new Roll(roll: 3, type: 8)
 
     it 'generates non explosive rolls by default', ->
       e = new Expression('(four)D6')
@@ -70,14 +70,14 @@ describe "Expression", ->
       ctx =
         three: 3
         eight: 8
-      expect(e.evaluate(ctx)).toEqual new Roll(mode: 'L5R', roll: {10: 8}, keep: {10: 3}, explosion_threshold: 10, explode: true)
+      expect(e.evaluate(ctx)).toEqual new Roll(mode: 'L5R', roll: 8, keep: 3, explosion_threshold: 10, explode: true)
 
     it 'can handle L5R skill rolls', ->
       e = new Expression('(two)|(three)')
       ctx =
         three: 3
         two: 2
-      expect(e.evaluate(ctx)).toEqual new Roll(mode: 'L5R', roll: {10: 5}, keep: {10: 2}, explosion_threshold: 10, explode: true)
+      expect(e.evaluate(ctx)).toEqual new Roll(mode: 'L5R', roll: 5, keep: 2, explosion_threshold: 10, explode: true)
       
     it 'generates explosive L5R rolls by default', ->
       e = new Expression('(four)K(three)')
@@ -122,7 +122,7 @@ describe "Expression", ->
       ctx =
         three: 3
         four: 4
-      expect(e.evaluate(ctx)).toEqual  new Roll(mode: 'L5R', roll: {10: 4+1}, keep: {10: 3+2}, explosion_threshold: 10, explode: true)
+      expect(e.evaluate(ctx)).toEqual  new Roll(mode: 'L5R', roll: 4+1, keep: 3+2, explosion_threshold: 10, explode: true)
       
     it 'can compute insight rank', ->
       e = new Expression 'max(1, floor((insight - 150) / 25) + 2)'

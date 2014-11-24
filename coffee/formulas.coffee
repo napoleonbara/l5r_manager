@@ -179,14 +179,10 @@ class Expression
         stack.push(top)
 
       pool_roll: (copy, stack, top, args) ->
-        roll = {}
-        roll[args[0]] = args[1]
-        keep = {}
-        keep[args[0]] = args[1]
-        stack.push(new Roll(roll: roll, keep: keep, mode: 'basic'))
+        stack.push(new Roll(roll: args[1], type: args[0], mode: 'basic'))
 
       roll_and_keep: (copy, stack, top, args) ->
-        stack.push(new Roll(roll: {10: args[1]}, keep: {10: args[0]}, mode: 'L5R', explosion_threshold: 10, explode: true))
+        stack.push(new Roll(roll: args[1], keep: args[0], mode: 'L5R', explosion_threshold: 10, explode: true))
 
       open_parenthese: (copy, stack, top, args) ->
 
@@ -227,8 +223,8 @@ class Roll
   constructor: (opts) ->
     Object.merge_with( @, 
       mode                : 'basic'
-      roll                : {6: 1}
-      keep                : {6: 1}
+      roll                : 1
+      type                : 6
       sum                 : false
       dice_modif          : 0
       roll_modif          : 0
@@ -239,8 +235,8 @@ class Roll
 
   add_roll: (other) ->
     Object.merge_with( @, 
-      roll                : Roll.merge_dice_pools(@roll, other.roll)
-      keep                : Roll.merge_dice_pools(this.keep, other.keep)
+      roll                : @roll + other.roll
+      keep                : @keep + other.keep
       sum                 : @sum or other.sum
       dice_modif          : @dice_modif + other.dice_modif
       roll_modif          : @roll_modif + other.roll_modif
@@ -262,8 +258,8 @@ class Roll
 
   sub_roll: (other) ->
     Object.merge_with( @, 
-      roll                : Roll.subtract_dice_pools(@roll, other.roll)
-      keep                : Roll.subtract_dice_pools(this.keep, other.keep)
+      roll                : @roll - other.roll
+      keep                : @keep - other.keep
       sum                 : @sum or other.sum
       dice_modif          : @dice_modif - other.dice_modif
       roll_modif          : @roll_modif - other.roll_modif
@@ -272,6 +268,21 @@ class Roll
     )
     
     @
+    
+  to_string: ->
+    switch @mode
+      when 'basic'
+        exp = if @explode then '!' else ''
+        dm = if @dice_modif != 0 then "^#{@dice_modif}" else ''
+        rm = if @roll_modif != 0 then "#{if @roll_modif > 0 then '+' else ''}#{@roll_modif}" else ''
+        et = if @explosion_threshold != @type then "!#{@explosion_threshold}" else ''
+        "#{exp}#{@roll}D#{@type}#{dm}#{et}#{rm}"
+      when 'L5R'
+        exp = unless @explode then '!' else ''
+        dm = if @dice_modif != 0 then "^#{@dice_modif}" else ''
+        rm = if @roll_modif != 0 then "#{if @roll_modif > 0 then '+' else ''}#{@roll_modif}" else ''
+        et = if @explosion_threshold != 10 then "!#{@explosion_threshold}" else ''
+        "#{exp}#{@roll}K#{@keep}#{dm}#{et}#{rm}"
 
 
 Roll.merge_dice_pools = (pool_1, pool_2) ->
