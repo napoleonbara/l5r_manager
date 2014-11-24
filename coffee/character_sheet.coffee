@@ -1,128 +1,127 @@
 
-class CharacterSheet
-  constructor: (@primaries, @secondaries) ->
-    @mapping = merge_objects(@primaries, @secondaries)
+ class CharacterSheet
+  constructor: (@mapping) ->
+    
+    is_computable = (v) -> v.compute?
+    primary_attributes =  Object.keep_if(@mapping, (k,v) -> not is_computable(v))
+    #computable_attributes = Object.keep_if(@mapping, (k,v) -> is_computable(v))
+
     for attr_name, properties of @mapping
-      @[attr_name] = $(properties.where)
-
-  set: (attr, val) ->
-    if typeof attr == 'string'
-      switch @mapping[attr].type
-        when 'int'
-          @[attr].text(val)
+      properties.where = $(properties.where)
+    
+    # mapping rank attributes
+    
+    for attr_name, properties of primary_attributes
+      switch properties.type
         when 'rank'
-          @[attr].text("#{val.rank}.#{val.points}")
-    else
-      for attr_name, value of attr
-        @set(attr_name, value)
+          value = properties.where.text()
+          [rank, points] = value.split('.').map(Number)
+          @mapping["#{attr_name} rank"] =
+            value: rank
+          @mapping["#{attr_name} points"] =
+            value: points
+          delete @mapping[attr_name]
+        when 'int'
+          properties.value = Number(properties.where.text())
 
-  get: (attr) ->
-    if typeof attr == 'string'
-      if typeof @mapping[attr].type == 'function'
-        return @mapping[attr].type(@[attr])
-      else
-        switch @mapping[attr].type
-          when 'int'
-            return Number(@[attr].text())
-          when 'rank'
-            [rank, points] = @[attr].text().split('.').map(Number)
-            return rank: rank, points: points 
-          else
-      result = {}
-      for attr_name, value of attr
-          result[attr_name] = @get(attr_name)
-      return result
+    # mapping skills
 
-  regroup_effects: (where) ->
-    $where = $(where).find('ul')
-    effect_dict = @get_all_effects()
+    sheet_mapping = @mapping
+    @mapping.skills.where.each (i, elem) ->
+      var_name = String.trim(String.small_case($(elem).find('.col0').text()))
+      sheet_mapping[var_name] =
+        pretty_name : String.trim($(elem).find('.col0').text())
+        category    : String.snake_case(String.trim($(elem).find('.col0 a').text()))
+        emphases    : String.trim($(elem).find('.col1').text())
+        value       : Number($(elem).find('.col2').text())
+    delete @mapping.skills
 
-    for category, effects of effect_dict
-      for effect_attr in effects
-        effect_str = @format_effect(effect_attr.effect)
-        content = ["<strong>#{category}</strong>:", effect_str]
-        content.push "<em>(#{effect_attr.why})<em>" if effect_attr.why?
-        $where.append("<li class='level1' ><div class='li'>"+
-          content.join(' ')+
-          "</div></li>")
 
-  get_all_effects: ->
-    effects_record = {}
-    $('effect').each () ->
-      category = $(this).attr('cat')
-      why = $(this).attr('why')
-      effect = $(this).attr('effect')
-
-      unless effects_record[category] then effects_record[category] = []
-      effects_record[category].push
-        why: why
-        effect: effect
-
-    effects_record
-  
-  map: (dict, with_skills = false) ->
-    r = {}
-    r[n] = @get(n) for n of dict
-    if with_skills
-      r[s.var_name] = s.rank for s in @get('skills')
-    r
-  
-  full_map: ->
-    merge_objects(@map(@mapping, true),
-        floor: Math.floor
-        ceil:  Math.ceil
-        max:   Math.max
-        min:   Math.min )
-  
-  format_effect: (str) ->
-    
-    expressions = str.match(/#\{[^\}]+\}/g)
-    
-    if expressions
-      map = @full_map()
-    
-      values = for expression in expressions
-        expression = expression.replace('#{', '').replace('}', '')
-        parsed = expression_parser.parse(expression)
-        @evaluate(parsed, map)
-      
-      for i in [0...expressions.length]
-        str = str.replace(expressions[i], values[i])
-    
-    return str
-    
-  evaluate: (tree, map) ->
-    switch tree.type
-      when 'symbol'       then map[tree.val]
-      when 'number'       then tree.val
-      when 'function call'then @evaluate(tree.func, map)(@evaluate(tree.arg, map))
-      when '*'            then @evaluate(tree.left, map) * @evaluate(tree.right, map)
-      when '/'            then @evaluate(tree.left, map) / @evaluate(tree.right, map)
-      when '+'            then @evaluate(tree.left, map) + @evaluate(tree.right, map)
-      when '-'            then @evaluate(tree.left, map) - @evaluate(tree.right, map)
-      when 'dot'          then @evaluate(tree.left, map)[tree.right.val]
-    
   complete: ->
-    map = @map(@primaries)
-    for name, properties of @secondaries
-      map[name] = properties.compute.call(map)
-      @set(name, map[name])
+    # mapping computables
+    context = @evaluation_context()
+    
+    for trait in [ "earth", "fire", "water", "air", "wound level normal", "wound level out",
+      "tn to be hit", "insight", "insight rank", "initiative"]
+      
+      val = switch trait
+        when 'insight'
+          @compute_insight()
+        when 'insight rank'
+          @compute_insight_rank()
+        else
+          window.handle_query(context, @mapping[trait].compute)
+      
+      @mapping[trait].value = context[trait] = val
+      @mapping[trait].where.text(val) if @mapping[trait].where?
+
+    sheet.apply_rules()
+    sheet.put_notes()
   
-  hide_skills_zero: ->
-    @skills.find('.col2')
-      .filter ->
-        Number(trim($(this).text())) == 0
-      .parent()
-      .hide()
-  
-sheet = null
-  
+
+  evaluation_context: ->
+    unless @context?
+      @context = context = {}
+      for attr_name, properties of @mapping
+        if properties.value?
+          context[attr_name] = properties.value
+          
+      @context = Object.merge(context,
+        floor: (args) -> Math.floor(args[0])
+        max: (args) -> Math.max.apply(null, args)
+        min: (args) -> Math.min.apply(null, args)
+        ceil: (args) -> Math.ceil(args[0])
+        'void point': @handle_query('1K1')
+      )
+    @context
+
+  compute_insight_rank: ->
+    Math.max(1, Math.floor((@mapping.insight.value - 150) / 25) + 2)
+
+  compute_insight: ->
+    mapping = @mapping
+    from_rings = ["earth", "fire", "water", "air", "void"].reduce(((r, e) -> r + mapping[e].value), 0) * 10
+    from_skills = 0
+    from_mastery = 0
+    for name, skill of Object.keep_if( @mapping, (k,v) -> v.emphases? )
+      from_skills += skill.value
+      for insight_bonus_level in SKILLS[skill.category]
+        if skill.rank >= insight_bonus_level
+          from_mastery += SKILLS[skill.category][insight_bonus_level]
+    from_rings + from_skills + from_mastery
+
+  handle_rule: (rule) ->
+    window.handle_rule(@evaluation_context(), rule)
+
+  handle_query: (exp) ->
+    window.handle_query(@evaluation_context(), exp)
+
+  apply_rules: ->
+    i = 0
+    ids = while (id = "#rules#{if i > 0 then i else ''}"; i++; $(id).length > 0)
+      id
+    rules = $(ids.join(', ')).next().find('p').map(-> String.trim($(@).text())).toArray()
+
+    for rule in rules
+      @handle_rule(rule)
+
+  put_notes: ->
+    i = 0
+    ids = while (id = "#notes#{if i > 0 then i else ''}"; i++; $(id).length > 0)
+      id
+    notes = $(ids.join(', ')).next().find('p').map(-> String.trim($(@).text())).toArray()
+
+    for note in notes
+      $('#fast_reference + div ul').append("<li>#{note}</li>")
+
+
 $ ->
 
-  sheet = new CharacterSheet(PRIMARY_MAPPING, SECONDARY_MAPPING)
-
-  sheet.complete()
-
-  sheet.regroup_effects('#fast_reference + div')
+  window.sheet = sheet = new CharacterSheet(MAPPING)
   
-  sheet.hide_skills_zero()
+  sheet.complete()
+  
+  $('#dice_roller input[type=button]').click ->
+    expression = $('#dice_roller input[type=text]').val()
+    result = sheet.handle_query(expression)
+

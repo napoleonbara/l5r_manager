@@ -1,183 +1,98 @@
+
 start
-  = _ roll:dice_roll modificators:modif_list? _
-  {
-    roll.modificators = modificators || [];
-    return roll;
-  }
+  = _ statement:statement _ {return statement;}
 
-dice_roll
-  = explosion_flag:"!"? roll:explosable_roll {roll.explode = !explosion_flag; return roll;}
-  / flat_roll
-
-explosable_roll
- = explicit_roll
-  / skill_roll
-  / trait_roll
-  
-flat_roll
-  = roll:natural "d10"
-  {
-    return {
-      type: 'flat roll',
-      roll: roll,
-    };
-  }
-  
-skill_roll 
-  = trait:symbol "/" skill:symbol
-  {
-    return {
-      type: 'skill roll',
-      trait: trait,
-      skill: skill,
-    };
-  }
-
-explicit_roll 
-  = roll:explicit_roll_term "K" keep:explicit_roll_term
-  {
-    return {
-      type: 'explicit roll',
-      roll: roll,
-      keep: keep,
-    };
-  }
-
-explicit_roll_term
- = "(" _ expression:expression _ ")" {return expression;}
- / number
- / symbol
-
-trait_roll 
-  = roll:symbol
-  {
-    return {
-      type: 'trait roll',
-      roll: roll,
-    };
-  }
-  
-whitespace
-  = " "
-  / "\t"
-  
+whiteSpace "whitespace"
+  = "\t"
+  / " "
 _
-  = whitespace*
+  = whiteSpace*
+
+statement
+  = target:symbol _ "="  _ value:expression { return { define: target[0], as: value }; }
+  / target:symbol _ "+=" _ value:expression { return { add: value, to: target[0] }; }
+  / target:symbol _ "-=" _ value:expression { return { subtract: value, from: target[0] }; }
+  / expression
+
   
-natural
-  = digits:[0-9]+
-  {
-    return {
-      type: 'number',
-      value: digits.join(''),
-    };
-  }
+expression
+  = additive_expression
+  / modifier_list
+  
+additive_expression
+  = left:multiplicative_expression _ "+" _ right:additive_expression { return left.concat(right, '+'); }
+  / left:multiplicative_expression _ "-" _ right:additive_expression { return left.concat(right, '-'); }
+  / multiplicative_expression
+
+multiplicative_expression
+  = left:primary_expression _ "*" _ right:multiplicative_expression { return left.concat(right, '*'); }
+  / left:primary_expression _ "/" _ right:multiplicative_expression { return left.concat(right, '/'); }
+  / primary_expression
+
+primary_expression
+  = roll_expression
+  / function_call
+  / number
+  / atomic
+
+atomic
+  = natural
+  / symbol
+  / "(" _ expression:expression _ ")" { return ['('].concat(expression, ')'); }
+  
+function_call
+  = name:symbol _ "(" _ args:argument_list? _ ")" { return ['ARG_LIST_BOTTOM'].concat(args, name, 'FUNCTION_CALL'); }
+  
+argument_list
+  = head:expression _ tail:argument_list_tail { return head.concat(tail); }
+  
+argument_list_tail
+  = tail:("," _ expression)* { r = []; for(var i in tail){r = r.concat(tail[i][2]);}; return r; }
+  
+number
+  = integral:integer decimal:("." natural)? { return [ Number((''+integral[0]) + (decimal ? ('.'+decimal[1][0]) : '')) ]; }
   
 integer
-  = minus:'-'? natural:natural
-  {
-    return {
-      type: 'number',
-      value: (minus || '') + natural.value,
-    };
-  }
-  
-variable
-  = left:container right:symbol
-  {
-    return {
-      type: "dot",
-      left: left,
-      right: right
-    };
-  }
-  / symbol
+  = minus:"-"? natural:natural {return [ Number((minus || "") + natural[0]) ]; }
+
+natural
+  = digits:[0-9]+ { return [ Number(digits.join('')) ]; }
   
 symbol
-  = head:[a-z] tail:[a-z_]+
-  {
-    return {
-      type: 'symbol',
-      value: head + (tail ? tail : []).join("")
-    };
-  }
+  = first:word rest:( _ word)* { return [[first].concat(rest.map(function(e){return e[1]})).join(' ')]; }
 
-container
-  = head:[a-z] tail:[a-z_]+ "."
-  {
-    return {
-      type: 'symbol',
-      value: head + (tail ? tail : []).join("")
-    };
-  }
-
-number
-  = integral:integer decimal:decimal_part?
-  {
-    return {
-      type: 'number',
-      value: integral.value + (decimal ? '.' + decimal : ''),
-    };
-  }
+word
+  = chars:[a-z]+ {return chars.join(''); }
   
-decimal_part
-  = '.' digits:natural { return digits.value; }
+roll_expression
+  = explode:"!"? _ basic_roll:basic_roll _ modifiers:modifier_list?
+  { return basic_roll.concat(modifiers ? modifiers : [], explode ? 'EXPLODE_FLAG' : []); }
 
-expression
-  = left:mul_op _ "+" _ right:expression { return { type: "+", left: left, right: right }; }
-  / left:mul_op _ "-" _ right:expression { return { type: "-", left: left, right: right }; }
-  / mul_op
+basic_roll
+  = pool_roll
+  / roll_and_keep
+  / skill_roll
 
-mul_op
-  = left:primary _ "*" _ right:mul_op { return { type: "*", left: left, right: right }; }
-  / left:primary _ "/" _ right:mul_op { return { type: "/", left: left, right: right }; }
-  / primary
-
-primary
-  = function_call
-  / number
-  / variable
-  / "(" _ exp:expression _ ")" { return exp; }
-
-function_call
-  = name:symbol _ "(" _ arguments:argument_list _ ")"
-  {
-    return {
-      type: "function call",
-      name: name.value,
-      arguments: arguments
-    };
-  }
+pool_roll
+  = number:atomic? _ "D" _ type:atomic? { return (number || [1]).concat(type || [6], 'POOL_ROLL'); }
   
+roll_and_keep
+  = roll:atomic? _ "K" _ keep:atomic { return (roll || keep).concat(keep, 'ROLL_AND_KEEP'); }
+  
+modifier_list
+  = head:modifier tail:(_ modifier)* { r = head; for(var i in tail){r = r.concat(tail[i][1]);}; return r; }
 
-argument_list
-  = head:expression _ ',' _ tail:argument_list
-  {
-    return [head].concat(tail);
-  }
-  / expression:expression
-  {
-    return [expression];
-  }
-  / ''
-  {
-    return [];
-  }
+modifier
+  = explosion_modifier
+  / dice_modifier
 
   
-modif_list
-  = head:modificator tail:modif_list?
-  {
-    return [head].concat(tail || []);
-  }
+explosion_modifier
+  = "!" _ value:atomic { return value.concat('EXPLOSION_THRESHOLD'); }
   
-modificator
-  = '^' value:modificator_value {return {type: 'dice modificator', value: value};}
-  / '!' value:modificator_value {return {type: 'explosion modificator', value: value};}
-  / '+' value:modificator_value {return {type: 'roll bonus', value: value};}
-  / '-' value:modificator_value {return {type: 'roll penalty', value: value};}
+dice_modifier
+  = "^" _ value:atomic { return value.concat('DICE_MODIF'); }
   
-modificator_value
- = "(" _ expression:expression _ ")" {return expression;}
- / integer
- / symbol
+skill_roll
+  = trait:atomic _ "|" _ skill:atomic { return trait.concat(skill, '+', trait, 'ROLL_AND_KEEP'); }
+  

@@ -16,13 +16,15 @@ task :css_build => [
 ]
 
 task :js_build => [
-  'javascripts/expression_parser.js',
   'javascripts/character_sheet.js',
-  'javascripts/dices.js']
+  'javascripts/dice_roller_parser.js']
 
 task :test_build => [
+  :js_build,
   'tests/spec/spec_helper.js',
-  'tests/spec/dice_roller_parser_spec.js']
+  'tests/spec/dice_roller_parser_spec.js',
+  'tests/spec/formulas_spec.js',
+  'tests/spec/helpers_spec.js' ]
 
 task :build => [:css_build, :js_build, :test_build]
 
@@ -48,43 +50,44 @@ end
 
                                   ##### TESTS #####
 
-file 'tests/spec/dice_roller_parser_spec.js' => [
-  'javascripts/dice_roller_parser.js',
-  'tests/spec/dice_roller_parser_spec.coffee', ] do
+file 'tests/spec/dice_roller_parser_spec.js' => 'tests/spec/dice_roller_parser_spec.coffee' do |t|
   
-  sh "coffee --compile --output tests\\spec\\ tests\\spec\\dice_roller_parser_spec.coffee"
+  sh "coffee --compile --output tests\\spec\\ #{t.source}"
 end
 
-file 'tests/spec/spec_helper.js' => 'tests/spec/spec_helper.coffee' do
+file 'tests/spec/spec_helper.js' => 'tests/spec/spec_helper.coffee' do |t|
   
-  sh "coffee --compile --output tests\\spec\\ tests\\spec\\spec_helper.coffee"
+  sh "coffee --compile --output tests\\spec\\ #{t.source}"
 end
+
+file 'tests/spec/formulas_spec.js' => 'tests/spec/formulas_spec.coffee' do |t|
+  
+  sh "coffee --compile --output tests\\spec\\ #{t.source}"
+end
+
+file 'tests/spec/helpers_spec.js' => 'tests/spec/helpers_spec.coffee' do |t|
+  
+  sh "coffee --compile --output tests\\spec\\ #{t.source}"
+end
+
 
                                   ##### JAVASCRIPTS #####
 
 file 'javascripts/character_sheet.js' => [
   'coffee/skills_data.coffee',
   'coffee/helpers.coffee',
+  'coffee/dices.coffee',
   'coffee/character_sheet_mapping.coffee',
   'coffee/character_sheet.coffee',
-  'coffee/dices.coffee'] do |t|
+  'coffee/formulas.coffee'] do |t|
   sh "coffee --map --compile --output javascripts\\ --join character_sheet.js #{t.sources.join(' ')}"
-end
-
-file 'javascripts/expression_parser.js' => 'pegjs/expression.pegjs' do |t|
-  sh "pegjs -e expression_parser #{t.source} #{t.name}"
 end
 
 file 'javascripts/dice_roller_parser.js' => 'pegjs/dice_roller_parser.pegjs' do |t|
   
-  sh "pegjs -e dice_roller_parser #{t.source} #{t.name}"
+  sh "pegjs -e dice_roller_parser pegjs\\dice_roller_parser.pegjs javascripts/dice_roller_parser.js"
 end
 
-file 'javascripts/dices.js' => [
-  'coffee/helpers.coffee',
-  'coffee/dices.coffee'] do |t|
-  sh "coffee --map --compile --output javascripts\\ --join dices.js #{t.sources.join(' ')}"
-end
 
                                   ##### CSS #####
 

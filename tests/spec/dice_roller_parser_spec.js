@@ -4,465 +4,155 @@
 
   parse = dice_roller_parser.parse;
 
-  describe("Dice Roller Parser", function() {
+  describe("Dice Roller Parser in RPN", function() {
     describe('parsing flat dice rolls', function() {
-      it('"3d10"', function() {
+      it('"  3D10   "', function() {
         var t;
-        t = parse("3d10");
-        return expect(t).toEqual({
-          type: 'flat roll',
-          modificators: [],
-          roll: {
-            type: 'number',
-            value: '3'
-          }
-        });
+        t = parse("  3D10   ");
+        return expect(t).toEqual([3, 10, 'POOL_ROLL']);
       });
-      it('"7d10   "', function() {
+      return it('"4 D 8"', function() {
         var t;
-        t = parse("7d10   ");
-        return expect(t).toEqual(parse("7d10"));
-      });
-      it('"   4d10"', function() {
-        var t;
-        t = parse("   4d10");
-        return expect(t).toEqual(parse("4d10"));
-      });
-      return it('throw an error on interspercing space "4 d10"', function() {
-        var parse_bad;
-        parse_bad = function() {
-          return parse("4 d10");
-        };
-        return expect(parse_bad).toThrow();
+        t = parse("4 D 8");
+        return expect(t).toEqual([4, 8, 'POOL_ROLL']);
       });
     });
     describe('parsing trait rolls', function() {
-      it('"fire"', function() {
+      return it('"K fire"', function() {
         var t;
-        t = parse("fire");
-        return expect(t).toEqual({
-          type: 'trait roll',
-          explode: true,
-          modificators: [],
-          roll: {
-            type: 'symbol',
-            value: 'fire'
-          }
-        });
-      });
-      it('"water   "', function() {
-        var t;
-        t = parse("water   ");
-        return expect(t).toEqual(parse("water"));
-      });
-      return it('"   willpower"', function() {
-        var t;
-        t = parse("   willpower");
-        return expect(t).toEqual(parse("willpower"));
+        t = parse("K fire");
+        return expect(t).toEqual(['fire', 'fire', 'ROLL_AND_KEEP']);
       });
     });
     describe('parsing skill rolls', function() {
-      it('"trait/skill"', function() {
+      return it('"trait | skill"', function() {
         var t;
-        t = parse("trait/skill");
-        return expect(t).toEqual({
-          type: 'skill roll',
-          explode: true,
-          modificators: [],
-          trait: {
-            type: 'symbol',
-            value: 'trait'
-          },
-          skill: {
-            type: 'symbol',
-            value: 'skill'
-          }
-        });
-      });
-      it('"trait/skill   "', function() {
-        var t;
-        t = parse("trait/skill");
-        return expect(t).toEqual(parse("trait/skill"));
-      });
-      return it('"   trait/skill"', function() {
-        var t;
-        t = parse("trait/skill");
-        return expect(t).toEqual(parse("trait/skill"));
+        t = parse("trait | skill");
+        return expect(t).toEqual(['trait', 'skill', '+', 'trait', 'ROLL_AND_KEEP']);
       });
     });
     describe('parsing explicit rolls', function() {
-      it('"4K3"', function() {
+      it('"4 K 3"', function() {
         var t;
-        t = parse("4K3");
-        return expect(t).toEqual({
-          type: 'explicit roll',
-          explode: true,
-          modificators: [],
-          roll: {
-            type: 'number',
-            value: '4'
-          },
-          keep: {
-            type: 'number',
-            value: '3'
-          }
-        });
+        t = parse("4 K 3");
+        return expect(t).toEqual([4, 3, 'ROLL_AND_KEEP']);
       });
       it('"(agility + iaijutsu)Kagility"', function() {
         var t;
         t = parse("(agility + iaijutsu)Kagility");
-        return expect(t).toEqual({
-          type: 'explicit roll',
-          explode: true,
-          modificators: [],
-          roll: {
-            type: '+',
-            left: {
-              type: 'symbol',
-              value: 'agility'
-            },
-            right: {
-              type: 'symbol',
-              value: 'iaijutsu'
-            }
-          },
-          keep: {
-            type: 'symbol',
-            value: 'agility'
-          }
-        });
-      });
-      it('"(agility + iaijutsu)K(agility)"', function() {
-        var t;
-        t = parse("(agility + iaijutsu)Kagility");
-        return expect(t).toEqual(parse("(agility + iaijutsu)Kagility"));
-      });
-      it('"(agility + iaijutsu)K3"', function() {
-        var t;
-        t = parse("(agility + iaijutsu)K3");
-        return expect(t).toEqual({
-          type: 'explicit roll',
-          explode: true,
-          modificators: [],
-          roll: {
-            type: '+',
-            left: {
-              type: 'symbol',
-              value: 'agility'
-            },
-            right: {
-              type: 'symbol',
-              value: 'iaijutsu'
-            }
-          },
-          keep: {
-            type: 'number',
-            value: '3'
-          }
-        });
+        return expect(t).toEqual(['(', 'agility', 'iaijutsu', '+', ')', 'agility', 'ROLL_AND_KEEP']);
       });
       it('"(strength * 1.5 + 3)K2"', function() {
         var t;
         t = parse("(strength * 1.5 + 3)K2");
-        return expect(t).toEqual({
-          type: 'explicit roll',
-          explode: true,
-          modificators: [],
-          roll: {
-            type: '+',
-            left: {
-              type: '*',
-              left: {
-                type: 'symbol',
-                value: 'strength'
-              },
-              right: {
-                type: 'number',
-                value: '1.5'
-              }
-            },
-            right: {
-              type: 'number',
-              value: '3'
-            }
-          },
-          keep: {
-            type: 'number',
-            value: '2'
-          }
-        });
+        return expect(t).toEqual(['(', 'strength', 1.5, '*', 3, '+', ')', 2, 'ROLL_AND_KEEP']);
       });
       it('"(floor(strength * 1.5) + 3)K2"', function() {
         var t;
         t = parse("(floor(strength * 1.5) + 3)K2");
-        return expect(t).toEqual({
-          type: 'explicit roll',
-          modificators: [],
-          explode: true,
-          roll: {
-            type: '+',
-            left: {
-              type: 'function call',
-              name: 'floor',
-              "arguments": [
-                {
-                  type: '*',
-                  left: {
-                    type: 'symbol',
-                    value: 'strength'
-                  },
-                  right: {
-                    type: 'number',
-                    value: '1.5'
-                  }
-                }
-              ]
-            },
-            right: {
-              type: 'number',
-              value: '3'
-            }
-          },
-          keep: {
-            type: 'number',
-            value: '2'
-          }
-        });
+        return expect(t).toEqual(['(', 'ARG_LIST_BOTTOM', 'strength', 1.5, '*', 'floor', 'FUNCTION_CALL', 3, '+', ')', 2, 'ROLL_AND_KEEP']);
       });
-      it('"(max(strength, perception)K2"', function() {
+      return it('"(max(strength, perception))K2"', function() {
         var t;
         t = parse("(max(strength, perception))K2");
-        return expect(t).toEqual({
-          type: 'explicit roll',
-          explode: true,
-          modificators: [],
-          roll: {
-            type: 'function call',
-            name: 'max',
-            "arguments": [
-              {
-                type: 'symbol',
-                value: 'strength'
-              }, {
-                type: 'symbol',
-                value: 'perception'
-              }
-            ]
-          },
-          keep: {
-            type: 'number',
-            value: '2'
-          }
-        });
-      });
-      it('"   8K5"', function() {
-        var t;
-        t = parse("   8K5");
-        return expect(t).toEqual(parse("8K5"));
-      });
-      return it('"7K1    "', function() {
-        var t;
-        t = parse("7K1    ");
-        return expect(t).toEqual(parse("7K1"));
+        return expect(t).toEqual(['(', 'ARG_LIST_BOTTOM', 'strength', 'perception', 'max', 'FUNCTION_CALL', ')', 2, 'ROLL_AND_KEEP']);
       });
     });
     describe('dice modificator option', function() {
-      it('"3K2^2"', function() {
+      it('"3K2 ^ 2"', function() {
         var t;
-        t = parse("3K2^2");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'dice modificator',
-            value: {
-              type: 'number',
-              value: '2'
-            }
-          }
-        ]);
+        t = parse("3K2 ^ 2");
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 2, 'DICE_MODIF']);
       });
       it('"3K2^-2"', function() {
         var t;
-        t = parse("3K2^-2");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'dice modificator',
-            value: {
-              type: 'number',
-              value: '-2'
-            }
-          }
-        ]);
+        t = parse("3K2^(-2)");
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', '(', -2, ')', 'DICE_MODIF']);
       });
       it('"3K2^earth"', function() {
         var t;
         t = parse("3K2^earth");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'dice modificator',
-            value: {
-              type: 'symbol',
-              value: 'earth'
-            }
-          }
-        ]);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 'earth', 'DICE_MODIF']);
       });
       return it('"3K2^(honor.rank * 2)"', function() {
         var t;
-        t = parse("3K2^(honor.rank * 2)");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'dice modificator',
-            value: {
-              type: '*',
-              right: {
-                type: 'number',
-                value: '2'
-              },
-              left: {
-                type: 'dot',
-                right: {
-                  type: 'symbol',
-                  value: 'rank'
-                },
-                left: {
-                  type: 'symbol',
-                  value: 'honor'
-                }
-              }
-            }
-          }
-        ]);
+        t = parse("3K2^(honor rank * 2)");
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', '(', 'honor rank', 2, '*', ')', 'DICE_MODIF']);
       });
     });
     describe('roll modificator option', function() {
       it('"3K2+2"', function() {
         var t;
         t = parse("3K2+2");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'roll bonus',
-            value: {
-              type: 'number',
-              value: '2'
-            }
-          }
-        ]);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 2, '+']);
       });
       it('"3K2-2"', function() {
         var t;
         t = parse("3K2-2");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'roll penalty',
-            value: {
-              type: 'number',
-              value: '2'
-            }
-          }
-        ]);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 2, '-']);
       });
       return it('"3K2+(earth * 2)"', function() {
         var t;
         t = parse("3K2+(earth * 2)");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'roll bonus',
-            value: {
-              type: '*',
-              left: {
-                type: 'symbol',
-                value: 'earth'
-              },
-              right: {
-                type: 'number',
-                value: '2'
-              }
-            }
-          }
-        ]);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', '(', 'earth', 2, '*', ')', '+']);
       });
     });
     describe('explosion threshold option', function() {
       it('"3K2!9"', function() {
         var t;
         t = parse("3K2!9");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'explosion modificator',
-            value: {
-              type: 'number',
-              value: '9'
-            }
-          }
-        ]);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 9, 'EXPLOSION_THRESHOLD']);
       });
-      it('"3K2!earth"', function() {
+      return it('"3K2!earth"', function() {
         var t;
         t = parse("3K2!earth");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'explosion modificator',
-            value: {
-              type: 'symbol',
-              value: 'earth'
-            }
-          }
-        ]);
-      });
-      return it('"3K2!(earth * 2)"', function() {
-        var t;
-        t = parse("3K2!(earth * 2)");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'explosion modificator',
-            value: {
-              type: '*',
-              left: {
-                type: 'symbol',
-                value: 'earth'
-              },
-              right: {
-                type: 'number',
-                value: '2'
-              }
-            }
-          }
-        ]);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 'earth', 'EXPLOSION_THRESHOLD']);
       });
     });
     describe('no explosion option', function() {
       return it('"!3K2"', function() {
         var t;
         t = parse("!3K2");
-        return expect(t.explode).toBeFalsy();
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 'EXPLODE_FLAG']);
       });
     });
-    return describe('chaining options', function() {
+    describe('chaining options', function() {
       return it('"3K2!(earth * 2)^2"', function() {
         var t;
         t = parse("3K2!(earth * 2)^2");
-        return expect(t.modificators).toEqual([
-          {
-            type: 'explosion modificator',
-            value: {
-              type: '*',
-              left: {
-                type: 'symbol',
-                value: 'earth'
-              },
-              right: {
-                type: 'number',
-                value: '2'
-              }
-            }
-          }, {
-            type: 'dice modificator',
-            value: {
-              type: 'number',
-              value: '2'
-            }
-          }
-        ]);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', '(', 'earth', 2, '*', ')', 'EXPLOSION_THRESHOLD', 2, 'DICE_MODIF']);
+      });
+    });
+    return describe('statements', function() {
+      describe('definition', function() {
+        return it('"initiative = reflexes|insight rank"', function() {
+          var t;
+          t = parse("initiative = reflexes|insight rank");
+          return expect(t).toEqual({
+            define: 'initiative',
+            as: ['reflexes', 'insight rank', '+', 'reflexes', 'ROLL_AND_KEEP']
+          });
+        });
+      });
+      describe('addition', function() {
+        return it('"initiative += iaijutsu * 2"', function() {
+          var t;
+          t = parse("initiative += iaijutsu * 2");
+          return expect(t).toEqual({
+            add: ['iaijutsu', 2, '*'],
+            to: 'initiative'
+          });
+        });
+      });
+      return describe('substration', function() {
+        return it('"initiative -= wound penalty"', function() {
+          var t;
+          t = parse("initiative -= wound penalty");
+          return expect(t).toEqual({
+            subtract: ['wound penalty'],
+            from: 'initiative'
+          });
+        });
       });
     });
   });
