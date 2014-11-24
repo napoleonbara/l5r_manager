@@ -182,7 +182,7 @@ class Expression
         stack.push(new Roll(roll: args[1], type: args[0], mode: 'basic'))
 
       roll_and_keep: (copy, stack, top, args) ->
-        stack.push(new Roll(roll: args[1], keep: args[0], mode: 'L5R', explosion_threshold: 10, explode: true))
+        stack.push(new Roll(type: 10, roll: args[1], keep: args[0], mode: 'L5R', explosion_threshold: 10, explode: true))
 
       open_parenthese: (copy, stack, top, args) ->
 

@@ -365,7 +365,9 @@
     roll_l5r = function(input, result) {
       var dice, i, keep_num, out, roll_num, row, _i, _j;
       out = $("#dice_result");
-      dice = roll_each_die(result);
+      dice = roll_each_die(result).sort(function(a, b) {
+        return a < b;
+      });
       roll_num = dice.length;
       keep_num = result.keep;
       out.html("<div id='summary'>" + (result.to_string()) + ":<div>              <table><tr></tr></table>              <div id='dices_sum'><div>");
@@ -946,6 +948,7 @@
         },
         roll_and_keep: function(copy, stack, top, args) {
           return stack.push(new Roll({
+            type: 10,
             roll: args[1],
             keep: args[0],
             mode: 'L5R',

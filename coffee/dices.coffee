@@ -57,7 +57,7 @@ $ ->
 
   roll_l5r = (input, result) ->
     out = $("#dice_result")
-    dice = roll_each_die(result)
+    dice = roll_each_die(result).sort((a,b)-> a < b)
     roll_num = dice.length
     keep_num = result.keep
 
