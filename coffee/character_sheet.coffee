@@ -70,17 +70,32 @@
   evaluation_context: ->
     unless @context?
       @context = context = {}
-      for attr_name, properties of @mapping
-        if properties.value?
-          context[attr_name] = properties.value
-          
-      @context = Object.merge(context,
+      mapping = @mapping
+      ext = {
         floor: (args) -> Math.floor(args[0])
         max: (args) -> Math.max.apply(null, args)
         min: (args) -> Math.min.apply(null, args)
         ceil: (args) -> Math.ceil(args[0])
         'void point': @handle_query('1K1')
-      )
+      }
+        
+      context.get = (s)->
+        switch
+          when ext.hasOwnProperty(s)
+            ext[s]
+          when mapping.hasOwnProperty(s)
+            mapping[s].value
+
+      context.set = (s, v)->
+        if mapping.hasOwnProperty(s)
+          mapping[s].value = v
+        else
+          mapping[s] =
+            value: v
+
+      context.has = (s)->
+        ext.hasOwnProperty(s) or mapping.hasOwnProperty(s)
+
     @context
 
   compute_insight_rank: ->

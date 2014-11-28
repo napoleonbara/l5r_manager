@@ -613,17 +613,11 @@
     };
 
     CharacterSheet.prototype.evaluation_context = function() {
-      var attr_name, context, properties, _ref;
+      var context, ext, mapping;
       if (this.context == null) {
         this.context = context = {};
-        _ref = this.mapping;
-        for (attr_name in _ref) {
-          properties = _ref[attr_name];
-          if (properties.value != null) {
-            context[attr_name] = properties.value;
-          }
-        }
-        this.context = Object.merge(context, {
+        mapping = this.mapping;
+        ext = {
           floor: function(args) {
             return Math.floor(args[0]);
           },
@@ -637,7 +631,27 @@
             return Math.ceil(args[0]);
           },
           'void point': this.handle_query('1K1')
-        });
+        };
+        context.get = function(s) {
+          switch (false) {
+            case !ext.hasOwnProperty(s):
+              return ext[s];
+            case !mapping.hasOwnProperty(s):
+              return mapping[s].value;
+          }
+        };
+        context.set = function(s, v) {
+          if (mapping.hasOwnProperty(s)) {
+            return mapping[s].value = v;
+          } else {
+            return mapping[s] = {
+              value: v
+            };
+          }
+        };
+        context.has = function(s) {
+          return ext.hasOwnProperty(s) || mapping.hasOwnProperty(s);
+        };
       }
       return this.context;
     };
@@ -747,11 +761,11 @@
     rule = parse(rule);
     switch (false) {
       case !rule.hasOwnProperty('define'):
-        return ctx[rule.define] = (new Expression(rule.as)).evaluate(ctx);
+        return ctx.set(rule.define, (new Expression(rule.as)).evaluate(ctx));
       case !rule.hasOwnProperty('add'):
-        return ctx[rule.to] = (new Expression([rule.to].concat(rule.add, '+'))).evaluate(ctx);
+        return ctx.set(rule.to, (new Expression([rule.to].concat(rule.add, '+'))).evaluate(ctx));
       case !rule.hasOwnProperty('subtract'):
-        return ctx[rule.from] = (new Expression([rule.from].concat(rule.subtract, '-'))).evaluate(ctx);
+        return ctx.get(rule.from, (new Expression([rule.from].concat(rule.subtract, '-'))).evaluate(ctx));
     }
   };
 
@@ -845,7 +859,7 @@
 
     Expression.prototype.required_computations = function(ctx) {
       return this.dependencies().filter(function(e) {
-        return !ctx.hasOwnProperty(e);
+        return !ctx.has(e);
       });
     };
 
@@ -960,7 +974,7 @@
         close_parenthese: function(copy, stack, top, args) {},
         symbol: function(copy, stack, top, args) {
           var v;
-          v = ctx[top];
+          v = ctx.get(top);
           if (v == null) {
             throw "don't know the symbol " + top;
           }

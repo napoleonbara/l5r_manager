@@ -7,11 +7,11 @@ window.handle_rule = (ctx, rule) ->
   rule = parse(rule);
   switch
     when rule.hasOwnProperty('define')
-      ctx[rule.define] = (new Expression(rule.as)).evaluate(ctx)
+      ctx.set(rule.define, (new Expression(rule.as)).evaluate(ctx) )
     when rule.hasOwnProperty('add')
-      ctx[rule.to] = (new Expression([rule.to].concat(rule.add, '+'))).evaluate(ctx)
+      ctx.set(rule.to, (new Expression([rule.to].concat(rule.add, '+'))).evaluate(ctx) )
     when rule.hasOwnProperty('subtract')
-      ctx[rule.from] = (new Expression([rule.from].concat(rule.subtract, '-'))).evaluate(ctx)
+      ctx.get(rule.from, (new Expression([rule.from].concat(rule.subtract, '-'))).evaluate(ctx) )
 
 
 window.handle_query = (ctx, expression) ->
@@ -92,7 +92,7 @@ class Expression
     @rpn.filter( (e) -> typeof e == 'string' and not Array.include(RESERVED_SYMBOLS, e) )
   
   required_computations: (ctx) ->
-    @dependencies().filter( (e) -> not ctx.hasOwnProperty(e) )
+    @dependencies().filter( (e) -> not ctx.has(e) )
 
   scan: (fs) ->
     copy = @rpn.slice().reverse()
@@ -189,7 +189,7 @@ class Expression
       close_parenthese: (copy, stack, top, args) ->
 
       symbol: (copy, stack, top, args) ->
-        v = ctx[top]
+        v = ctx.get(top)
         unless v? then throw "don't know the symbol " + top
         stack.push(v)
 

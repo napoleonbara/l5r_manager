@@ -1,3 +1,11 @@
+make_context = (o)->
+  get: (s)->
+    o[s]
+  set: (s, v)->
+    o[s] = v
+  has: (s)->
+    o.hasOwnProperty(s)
+
 
 describe "Expression", ->
 
@@ -38,112 +46,146 @@ describe "Expression", ->
 
     it 'can handle variables with a context', ->
       e = new Expression('(var one + 6) * var two + 4')
-      expect(e.evaluate({'var one': 5, 'var two': 3})).toEqual 37
+      ctx = make_context(
+        'var one': 5
+        'var two': 3
+      )
+      expect(e.evaluate(ctx)).toEqual 37
 
     it 'can handle function calls with a context', ->
       e = new Expression('first(a, b, c, d)')
-      ctx =
+      ctx = make_context(
         first: (args) ->
           args[0]
         a: 5
         b: 4
         c: 3
         d: 8
-      expect(e.evaluate(ctx)).toEqual ctx.a
+      )
+      expect(e.evaluate(ctx)).toEqual ctx.get('a')
      
     it 'can handle simple dice rolls', ->
       e = new Expression('(three)D(eight)')
-      ctx =
+      ctx = make_context(
         three: 3
         eight: 8
+      )
       expect(e.evaluate(ctx)).toEqual new Roll(roll: 3, type: 8)
 
     it 'generates non explosive rolls by default', ->
       e = new Expression('(four)D6')
-      ctx =
+      ctx = make_context(
         four: 4
+      )
       roll = e.evaluate(ctx)
       expect(roll.explode).toEqual false
       
     it 'can handle L5R "roll and keep" dice rolls', ->
       e = new Expression('(eight)K(three)')
-      ctx =
+      ctx = make_context(
         three: 3
         eight: 8
-      expect(e.evaluate(ctx)).toEqual new Roll(mode: 'L5R', roll: 8, keep: 3, explosion_threshold: 10, explode: true)
+      )
+      expect(e.evaluate(ctx)).toEqual new Roll(
+        mode: 'L5R'
+        roll: 8
+        keep: 3
+        type: 10
+        explosion_threshold: 10
+        explode: true )
 
     it 'can handle L5R skill rolls', ->
       e = new Expression('(two)|(three)')
-      ctx =
+      ctx = make_context(
         three: 3
         two: 2
-      expect(e.evaluate(ctx)).toEqual new Roll(mode: 'L5R', roll: 5, keep: 2, explosion_threshold: 10, explode: true)
+      )
+      expect(e.evaluate(ctx)).toEqual new Roll(
+        mode: 'L5R'
+        roll: 5
+        keep: 2
+        type: 10
+        explosion_threshold: 10
+        explode: true )
       
     it 'generates explosive L5R rolls by default', ->
       e = new Expression('(four)K(three)')
-      ctx =
+      ctx = make_context(
         three: 3
         four: 4
+      )
       roll = e.evaluate(ctx)
       expect(roll.explode).toEqual true
 
     it 'can handle non explosive dice rolls', ->
       e = new Expression('!(four)K(three)')
-      ctx =
+      ctx = make_context(
         three: 3
         four: 4
+      )
       roll = e.evaluate(ctx)
       expect(roll.explode).toEqual false
 
     it 'can handle complex roll bonuses', ->
       e = new Expression('(four)K(three) + three * 2')
-      ctx =
+      ctx = make_context(
         three: 3
         four: 4
+      )
       expect(e.evaluate(ctx).roll_modif).toEqual 6
       
     it 'can handle complex roll penalty', ->
       e = new Expression('(four)K(three) - three * 2')
-      ctx =
+      ctx = make_context(
         three: 3
         four: 4
+      )
       expect(e.evaluate(ctx).roll_modif).toEqual -6
      
     it 'can chain roll modificators', ->
       e = new Expression('(four)K(three) + three * 2 - wound penalty')
-      ctx =
+      ctx = make_context(
         three: 3
         four: 4
         'wound penalty': 10
+      )
       expect(e.evaluate(ctx).roll_modif).toEqual -4
      
     it 'can add roll dices to each other', ->
       e = new Expression('(four)K(three) + 1K2')
-      ctx =
+      ctx = make_context(
         three: 3
         four: 4
-      expect(e.evaluate(ctx)).toEqual  new Roll(mode: 'L5R', roll: 4+1, keep: 3+2, explosion_threshold: 10, explode: true)
+      )
+      expect(e.evaluate(ctx)).toEqual  new Roll(
+        mode: 'L5R'
+        roll: 4+1
+        keep: 3+2
+        type: 10
+        explosion_threshold: 10
+        explode: true  )
       
     it 'can compute insight rank', ->
       e = new Expression 'max(1, floor((insight - 150) / 25) + 2)'
-      ctx =
+      vars =
         floor: (args) -> Math.floor(args[0])
         max: (args) -> Math.max.apply(null, args)
-      ctx.insight = 149
+      ctx = make_context(vars)
+      vars.insight = 149
       expect(e.evaluate(ctx)).toEqual  1
-      ctx.insight = 150
+      vars.insight = 150
       expect(e.evaluate(ctx)).toEqual  2
-      ctx.insight = 174
+      vars.insight = 174
       expect(e.evaluate(ctx)).toEqual  2
-      ctx.insight = 175
+      vars.insight = 175
       expect(e.evaluate(ctx)).toEqual  3
-      ctx.insight = 199
+      vars.insight = 199
       expect(e.evaluate(ctx)).toEqual  3
-      ctx.insight = 200
+      vars.insight = 200
       expect(e.evaluate(ctx)).toEqual  4
-      ctx.insight = 224
+      vars.insight = 224
       expect(e.evaluate(ctx)).toEqual  4
-      ctx.insight = 225
+      vars.insight = 225
       expect(e.evaluate(ctx)).toEqual  5
       
       
@@ -154,75 +196,77 @@ describe "Expression", ->
     describe "operator =", ->
       
       it "can create new variables in the context", ->
-        ctx =
+        vars =
           eight: 8
           four: 4
           two: 2
+        ctx = make_context(vars)
         handle_rule(ctx, 'sixteen = eight * four / two')
-        expect(ctx).toEqual(
+        expect(vars).toEqual(
           eight: 8
           four: 4
           two: 2
           sixteen: 16)
 
       it "overwrites exsisting variables", ->
-        ctx =
+        vars =
           eight: 8
-
+        ctx = make_context(vars)
         handle_rule(ctx, 'eight = 4')
-        expect(ctx.eight).toEqual(4)
+        expect(vars.eight).toEqual(4)
           
     describe "operator +=", ->
       
       it "can add to old variables in the context", ->
-        ctx_1 =
+        ctx_1 = make_context(
           reflexes: 3
           "insight rank": 1
           iaijutsu: 4
-          
-        ctx_2 = 
+        )
+        ctx_2 = make_context(
           reflexes: 3
           "insight rank": 1
           iaijutsu: 4
+        )
 
         handle_rule(ctx_1, 'initiative = reflexes|insight rank')
         handle_rule(ctx_1, 'initiative += iaijutsu * 2')
         
         handle_rule(ctx_2, 'initiative = reflexes|insight rank + iaijutsu * 2')
         
-        expect(ctx_1.initiative).toEqual(ctx_2.initiative)
+        expect(ctx_1.get('initiative')).toEqual(ctx_2.get('initiative'))
 
       it "throws on adding to uncknown variables", ->
-        ctx =
+        ctx = make_context(
           iaijutsu: 4
-          
+        )
         expect(-> handle_rule(ctx, 'initiative += iaijutsu * 2')).toThrow("don't know the symbol initiative")
 
 
     describe "operator -=", ->
       
       it "can add to old variables in the context", ->
-        ctx_1 =
+        ctx_1 = make_context(
           reflexes: 3
           "wound penalty": 10
           iaijutsu: 4
-          
-        ctx_2 = 
+        )
+        ctx_2 = make_context(
           reflexes: 3
           "wound penalty": 10
           iaijutsu: 4
-
+        )
         handle_rule(ctx_1, 'attack = reflexes|iaijutsu')
         handle_rule(ctx_1, 'attack -= wound penalty')
         
         handle_rule(ctx_2, 'attack = reflexes|iaijutsu - wound penalty')
         
-        expect(ctx_1.attack).toEqual(ctx_2.attack)
+        expect(ctx_1.get('attack')).toEqual(ctx_2.get('attack'))
 
       it "throws on adding to uncknown variables", ->
-        ctx =
+        ctx = make_context(
           iaijutsu: 4
-          
+        )
         expect(-> handle_rule(ctx, 'initiative -= iaijutsu * 2')).toThrow("don't know the symbol initiative")
           
 # describe 'handle_query'
