@@ -50,8 +50,9 @@
         when 'insight rank'
           @compute_insight_rank()
         else
-          window.handle_query(context, @mapping[trait].compute)
-      
+          expression = window.handle_query(@mapping[trait].compute)
+          expression.evaluate(context)
+          
       @mapping[trait].value = context[trait] = val
       @mapping[trait].where.text(val) if @mapping[trait].where?
 
@@ -117,7 +118,8 @@
     window.handle_rule(@evaluation_context(), rule)
 
   handle_query: (exp) ->
-    window.handle_query(@evaluation_context(), exp)
+    r = window.handle_query(exp)
+    [r.evaluate(@evaluation_context()), r.to_string()]
 
   apply_rules: ->
     i = 0

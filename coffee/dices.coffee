@@ -18,17 +18,17 @@ $ ->
     
     if input.length
       try
-        result = handle_query(input)
+        [result, summary] = handle_query(input)
 
         switch 
           when typeof result == 'number'
-            put_number_result(input, result)
+            put_number_result(input, result, summary)
           
           when result.mode == 'L5R'
-            roll_l5r(input, result)
+            roll_l5r(input, result, summary)
           
           when result.mode == 'basic'
-            roll_basic(input, result)
+            roll_basic(input, result, summary)
 
       catch err
         message = switch
@@ -38,11 +38,11 @@ $ ->
             err
         out.html("<div id='summary' style='color: red; font-weight: bold;'>#{message}</div>")
 
-  put_number_result = (input, result) ->
+  put_number_result = (input, result, summary) ->
     out = $("#dice_result")
     out.html("<div id='summary'>#{input} = #{result}<div>")
 
-  roll_basic =  (input, result) ->
+  roll_basic =  (input, result, summary) ->
     out = $("#dice_result")
     dice = roll_each_die(result)
     roll_num = dice.length
@@ -55,13 +55,14 @@ $ ->
     for i in [0...roll_num]
       row.append('<td>'+dice[i]+'</td>')
 
-  roll_l5r = (input, result) ->
+  roll_l5r = (input, result, summary) ->
     out = $("#dice_result")
     dice = roll_each_die(result).sort((a,b)-> a < b)
     roll_num = dice.length
     keep_num = result.keep
 
-    out.html("<div id='summary'>#{result.to_string()}:<div>
+    out.html("<div id='summary'>#{summary}:<div>
+              <div id='thrown'>#{result.to_string()}:<div>
               <table><tr></tr></table>
               <div id='dices_sum'><div>")
 

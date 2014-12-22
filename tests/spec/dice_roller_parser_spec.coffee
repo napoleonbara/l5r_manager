@@ -31,21 +31,21 @@ describe "Dice Roller Parser in RPN", ->
       t = parse "4 K 3"
       expect(t).toEqual [4, 3, 'ROLL_AND_KEEP']
           
-    it '"(agility + iaijutsu)Kagility"', ->
-      t = parse "(agility + iaijutsu)Kagility"
-      expect(t).toEqual ['(', 'agility', 'iaijutsu', '+', ')', 'agility', 'ROLL_AND_KEEP']
+    it '"(agility + iaijutsu - 2)Kagility"', ->
+      t = parse "(agility + iaijutsu - 2)Kagility"
+      expect(t).toEqual ['agility', 'iaijutsu', 2, '-',  '+', 'agility', 'ROLL_AND_KEEP']
           
     it '"(strength * 1.5 + 3)K2"', ->
       t = parse "(strength * 1.5 + 3)K2"
-      expect(t).toEqual ['(', 'strength', 1.5, '*', 3, '+', ')', 2, 'ROLL_AND_KEEP']
+      expect(t).toEqual ['strength', 1.5, '*', 3, '+', 2, 'ROLL_AND_KEEP']
           
     it '"(floor(strength * 1.5) + 3)K2"', ->
       t = parse "(floor(strength * 1.5) + 3)K2"
-      expect(t).toEqual ['(', 'ARG_LIST_BOTTOM', 'strength', 1.5, '*', 'floor', 'FUNCTION_CALL', 3, '+', ')', 2, 'ROLL_AND_KEEP']
+      expect(t).toEqual ['ARG_LIST_BOTTOM', 'strength', 1.5, '*', 'floor', 'FUNCTION_CALL', 3, '+', 2, 'ROLL_AND_KEEP']
           
     it '"(max(strength, perception))K2"', ->
       t = parse "(max(strength, perception))K2"
-      expect(t).toEqual ['(', 'ARG_LIST_BOTTOM', 'strength', 'perception', 'max', 'FUNCTION_CALL', ')', 2, 'ROLL_AND_KEEP']
+      expect(t).toEqual ['ARG_LIST_BOTTOM', 'strength', 'perception', 'max', 'FUNCTION_CALL', 2, 'ROLL_AND_KEEP']
           
 
 
@@ -57,7 +57,7 @@ describe "Dice Roller Parser in RPN", ->
           
     it '"3K2^-2"', ->
       t = parse "3K2^(-2)"
-      expect(t).toEqual [3, 2, 'ROLL_AND_KEEP', '(', -2, ')', 'DICE_MODIF']
+      expect(t).toEqual [3, 2, 'ROLL_AND_KEEP', -2, 'DICE_MODIF']
 
     it '"3K2^earth"', ->
       t = parse "3K2^earth"
@@ -65,7 +65,7 @@ describe "Dice Roller Parser in RPN", ->
 
     it '"3K2^(honor.rank * 2)"', ->
       t = parse "3K2^(honor rank * 2)"
-      expect(t).toEqual [3, 2, 'ROLL_AND_KEEP', '(', 'honor rank', 2, '*', ')', 'DICE_MODIF']
+      expect(t).toEqual [3, 2, 'ROLL_AND_KEEP', 'honor rank', 2, '*', 'DICE_MODIF']
 
   describe 'roll modificator option', ->
     
@@ -79,7 +79,7 @@ describe "Dice Roller Parser in RPN", ->
 
     it '"3K2+(earth * 2)"', ->
       t = parse "3K2+(earth * 2)"
-      expect(t).toEqual [3, 2, 'ROLL_AND_KEEP', '(', 'earth', 2, '*', ')', '+']
+      expect(t).toEqual [3, 2, 'ROLL_AND_KEEP', 'earth', 2, '*', '+']
 
   describe 'explosion threshold option', ->
     
@@ -101,7 +101,7 @@ describe "Dice Roller Parser in RPN", ->
 
     it '"3K2!(earth * 2)^2"', ->
       t = parse "3K2!(earth * 2)^2"
-      expect(t).toEqual [3, 2, 'ROLL_AND_KEEP', '(', 'earth', 2, '*', ')', 'EXPLOSION_THRESHOLD', 2, 'DICE_MODIF']
+      expect(t).toEqual [3, 2, 'ROLL_AND_KEEP', 'earth', 2, '*', 'EXPLOSION_THRESHOLD', 2, 'DICE_MODIF']
 
   describe 'statements', ->
     

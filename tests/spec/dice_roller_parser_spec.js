@@ -37,25 +37,25 @@
         t = parse("4 K 3");
         return expect(t).toEqual([4, 3, 'ROLL_AND_KEEP']);
       });
-      it('"(agility + iaijutsu)Kagility"', function() {
+      it('"(agility + iaijutsu - 2)Kagility"', function() {
         var t;
-        t = parse("(agility + iaijutsu)Kagility");
-        return expect(t).toEqual(['(', 'agility', 'iaijutsu', '+', ')', 'agility', 'ROLL_AND_KEEP']);
+        t = parse("(agility + iaijutsu - 2)Kagility");
+        return expect(t).toEqual(['agility', 'iaijutsu', 2, '-', '+', 'agility', 'ROLL_AND_KEEP']);
       });
       it('"(strength * 1.5 + 3)K2"', function() {
         var t;
         t = parse("(strength * 1.5 + 3)K2");
-        return expect(t).toEqual(['(', 'strength', 1.5, '*', 3, '+', ')', 2, 'ROLL_AND_KEEP']);
+        return expect(t).toEqual(['strength', 1.5, '*', 3, '+', 2, 'ROLL_AND_KEEP']);
       });
       it('"(floor(strength * 1.5) + 3)K2"', function() {
         var t;
         t = parse("(floor(strength * 1.5) + 3)K2");
-        return expect(t).toEqual(['(', 'ARG_LIST_BOTTOM', 'strength', 1.5, '*', 'floor', 'FUNCTION_CALL', 3, '+', ')', 2, 'ROLL_AND_KEEP']);
+        return expect(t).toEqual(['ARG_LIST_BOTTOM', 'strength', 1.5, '*', 'floor', 'FUNCTION_CALL', 3, '+', 2, 'ROLL_AND_KEEP']);
       });
       return it('"(max(strength, perception))K2"', function() {
         var t;
         t = parse("(max(strength, perception))K2");
-        return expect(t).toEqual(['(', 'ARG_LIST_BOTTOM', 'strength', 'perception', 'max', 'FUNCTION_CALL', ')', 2, 'ROLL_AND_KEEP']);
+        return expect(t).toEqual(['ARG_LIST_BOTTOM', 'strength', 'perception', 'max', 'FUNCTION_CALL', 2, 'ROLL_AND_KEEP']);
       });
     });
     describe('dice modificator option', function() {
@@ -67,7 +67,7 @@
       it('"3K2^-2"', function() {
         var t;
         t = parse("3K2^(-2)");
-        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', '(', -2, ')', 'DICE_MODIF']);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', -2, 'DICE_MODIF']);
       });
       it('"3K2^earth"', function() {
         var t;
@@ -77,7 +77,7 @@
       return it('"3K2^(honor.rank * 2)"', function() {
         var t;
         t = parse("3K2^(honor rank * 2)");
-        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', '(', 'honor rank', 2, '*', ')', 'DICE_MODIF']);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 'honor rank', 2, '*', 'DICE_MODIF']);
       });
     });
     describe('roll modificator option', function() {
@@ -94,7 +94,7 @@
       return it('"3K2+(earth * 2)"', function() {
         var t;
         t = parse("3K2+(earth * 2)");
-        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', '(', 'earth', 2, '*', ')', '+']);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 'earth', 2, '*', '+']);
       });
     });
     describe('explosion threshold option', function() {
@@ -120,7 +120,7 @@
       return it('"3K2!(earth * 2)^2"', function() {
         var t;
         t = parse("3K2!(earth * 2)^2");
-        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', '(', 'earth', 2, '*', ')', 'EXPLOSION_THRESHOLD', 2, 'DICE_MODIF']);
+        return expect(t).toEqual([3, 2, 'ROLL_AND_KEEP', 'earth', 2, '*', 'EXPLOSION_THRESHOLD', 2, 'DICE_MODIF']);
       });
     });
     return describe('statements', function() {

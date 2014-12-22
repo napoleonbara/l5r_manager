@@ -38,7 +38,7 @@ primary_expression
 atomic
   = natural
   / symbol
-  / "(" _ expression:expression _ ")" { return ['('].concat(expression, ')'); }
+  / "(" _ expression:expression _ ")" { return expression; }
   
 function_call
   = name:symbol _ "(" _ args:argument_list? _ ")" { return ['ARG_LIST_BOTTOM'].concat(args, name, 'FUNCTION_CALL'); }

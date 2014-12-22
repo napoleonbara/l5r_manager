@@ -14,10 +14,37 @@ window.handle_rule = (ctx, rule) ->
       ctx.get(rule.from, (new Expression([rule.from].concat(rule.subtract, '-'))).evaluate(ctx) )
 
 
-window.handle_query = (ctx, expression) ->
-  expression = new Expression(expression)
-  expression.evaluate(ctx)
+window.handle_query = (expression) ->
+  new Expression(expression)
 
+class StringChunk
+  
+  constructor: (@content, @operator) ->
+    
+    @precedence = @get_precedence(@operator)
+    
+  get_precedence: (operator) ->
+    switch operator
+          when null
+            0
+          when '+', '-'
+            1
+          when '*', '/'
+            2
+          when '^', '!'
+            3
+          when 'K', '|', 'D'
+            4
+          when 'primary'
+            Infinity
+  
+  string: (operator=null) ->
+    precedence = @get_precedence(operator)
+    if @precedence < precedence
+      "(#{@content})"
+    else
+      @content
+  
 
 class Expression
   
@@ -31,59 +58,52 @@ class Expression
   to_string: ->
     @scan(
       add: (copy, stack, top, args) ->
-        copy.push("#{args[1]} + #{args[0]}")
+        stack.push(new StringChunk("#{args[1].string('+')} + #{args[0].string('+')}", '+'))
 
       sub: (copy, stack, top, args) ->
-        copy.push("#{args[1]} - #{args[0]}")
+        stack.push(new StringChunk("#{args[1].string('-')} - #{args[0].string('-')}", '-'))
 
       mul: (copy, stack, top, args) ->
-        copy.push("#{args[1]} * #{args[0]}")
+        stack.push(new StringChunk("#{args[1].string('*')} * #{args[0].string('*')}", '*'))
 
       div: (copy, stack, top, args) ->
-        copy.push("#{args[1]} / #{args[0]}")
+        stack.push(new StringChunk("#{args[1].string('/')} / #{args[0].string('/')}", '/'))
 
       function_call: (copy, stack, top, args) ->
         func = stack.pop()
         i = stack.lastIndexOf('ARG_LIST_BOTTOM')
         args = stack.splice(i)
         args.shift()
-        copy.push("#{func}(#{args.join(', ')})")
+        stack.push(new StringChunk("#{func.string('primary')}(#{args.map((e)->e.string('primary')).join(', ')})", 'primary'))
 
       arg_list_bottom:  (copy, stack, top, args) ->
         stack.push(top)
         
       pool_roll: (copy, stack, top, args) ->
-        copy.push( "#{args[1]}D#{args[0]}" )
+        stack.push(new StringChunk("#{args[1].string('D')}D#{args[0].string('D')}", 'D'))
 
       roll_and_keep: (copy, stack, top, args) ->
-        copy.push( "#{args[1]}K#{args[0]}" )
-
-      open_parenthese: (copy, stack, top, args) ->
-        stack.push(top)
-
-      close_parenthese: (copy, stack, top, args) ->
-        i = stack.lastIndexOf('(')
-        rest = stack.splice(i)
-        stack.push(rest.join('') + ')')
+        stack.push(new StringChunk("#{args[1].string('K')}K#{args[0].string('K')}", 'K'))
 
       symbol: (copy, stack, top, args) ->
-        stack.push(top)
+        stack.push(new StringChunk(top, 'primary'))
 
       number: (copy, stack, top, args) ->
-        stack.push("#{top}")
+        stack.push(new StringChunk("#{top}", 'primary'))
 
       dont_know: (copy, stack, top, args) ->
         throw "WTF is " + top + "? "
 
       dice_modif: (copy, stack, top, args) ->
-        copy.push("#{args[1]} ^ #{args[0]}")
+        stack.push(new StringChunk("#{args[1].string('^')} ^ #{args[0].string('^')}", '^'))
 
       explosion_threshold: (copy, stack, top, args) ->
-        copy.push("#{args[1]} ! #{args[0]}")
-        
+        stack.push(new StringChunk("#{args[1].string('!')} ! #{args[0].string('!')}", '!'))
+
       explode_flag: (copy, stack, top, args) ->
-        copy.push("!#{args[0]}}")
-    )
+        copy.push(new StringChunk("!#{args[0].string('!')}"))
+    
+    ).string()
 
   append: (exp) ->
     @rpn = @rpn.concat(exp.rpn)
@@ -124,12 +144,6 @@ class Expression
         when top == 'ARG_LIST_BOTTOM'
           fs.arg_list_bottom(copy, stack, top, [])
 
-        when top == '('
-          fs.open_parenthese(copy, stack, top, [])
-          
-        when top == ')'
-          fs.close_parenthese(copy, stack, top, [])
-          
         when top == 'EXPLOSION_THRESHOLD'
           fs.explosion_threshold(copy, stack, top, Array.popn(stack, 2))
           
@@ -179,14 +193,10 @@ class Expression
         stack.push(top)
 
       pool_roll: (copy, stack, top, args) ->
-        stack.push(new Roll(roll: args[1], type: args[0], mode: 'basic'))
+        stack.push(new Roll(roll: args[1], type: args[0], explosion_threshold: args[0], mode: 'basic'))
 
       roll_and_keep: (copy, stack, top, args) ->
         stack.push(new Roll(type: 10, roll: args[1], keep: args[0], mode: 'L5R', explosion_threshold: 10, explode: true))
-
-      open_parenthese: (copy, stack, top, args) ->
-
-      close_parenthese: (copy, stack, top, args) ->
 
       symbol: (copy, stack, top, args) ->
         v = ctx.get(top)
